@@ -1,64 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heart AR</title>
-    <!-- Model Viewer script -->
+
+    <!-- Import model-viewer library -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
     <style>
       body {
         margin: 0;
         padding: 0;
-        background: black;
-        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #000;
       }
       model-viewer {
         width: 100%;
-        height: 100vh;
+        height: 100%;
       }
-      .annotation {
+      /* Style for the floating label */
+      .hotspot {
         background: rgba(255, 0, 0, 0.8);
         color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 8px;
+        padding: 6px 10px;
+        border-radius: 12px;
         font-size: 14px;
-        font-weight: bold;
+        font-family: sans-serif;
       }
     </style>
   </head>
   <body>
     <model-viewer
-      id="heartModel"
-      src="realistic_human_heart.glb"
-      alt="3D Heart"
+      id="heartViewer"
+      src="./heart.glb"
+      alt="3D Heart Model"
       ar
       ar-modes="webxr scene-viewer quick-look"
       camera-controls
-      style="width: 100%; height: 100vh;"
+      shadow-intensity="1"
+      interaction-prompt="auto"
+      auto-rotate
     >
-      <!-- Floating Label in AR -->
-      <button
-        slot="hotspot-1"
-        data-position="0m 0.3m 0m"
-        data-normal="0m 1m 0m"
-        class="annotation"
-      >
-        Heart ❤️
+      <!-- Floating label anchored on the model -->
+      <button slot="hotspot-1" class="hotspot" data-position="0m 0.1m 0m" data-normal="0m 1m 0m">
+        Heart
       </button>
     </model-viewer>
 
     <script>
-      const heartModel = document.getElementById("heartModel");
+      const viewer = document.getElementById("heartViewer");
 
-      // Rotate when the user taps the model
-      heartModel.addEventListener("click", () => {
-        let currentRotation = heartModel.getCameraOrbit();
-        // Add 45° on Y axis with each tap
-        heartModel.cameraOrbit = `${
-          parseFloat(currentRotation.theta) + 45
-        }deg ${currentRotation.phi} ${currentRotation.radius}`;
+      let currentAngle = 0;
+
+      // On tap, rotate +90° each time
+      viewer.addEventListener("click", () => {
+        currentAngle += 90;
+        viewer.cameraOrbit = `${currentAngle}deg 75deg 2.5m`;
       });
     </script>
   </body>

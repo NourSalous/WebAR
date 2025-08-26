@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Heart WebAR</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
+    body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
+    model-viewer { width: 90vw; height: 90vh; }
     #info {
       position: absolute;
       top: 10px;
@@ -14,80 +15,37 @@
       background: rgba(0,0,0,0.5);
       color: white;
       padding: 5px 10px;
-      font-family: sans-serif;
       border-radius: 5px;
+      font-family: sans-serif;
       z-index: 1;
     }
   </style>
 </head>
 <body>
-  <div id="info">Tap the heart to rotate it</div>
+  <div id="info">Tap the heart to toggle rotation</div>
 
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js';
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/loaders/GLTFLoader.js';
-    import { ARButton } from 'https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/webxr/ARButton.js';
+  <model-viewer
+    id="heartModel"
+    src="realistic_human_heart.glb"
+    alt="3D Human Heart"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    camera-controls
+    auto-rotate
+    reveal="interaction">
+  </model-viewer>
 
-    let scene, camera, renderer, heart;
+  <script>
+    const model = document.getElementById('heartModel');
 
-    init();
-    function init() {
-      // Scene
-      scene = new THREE.Scene();
-
-      // Camera
-      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
-
-      // Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.xr.enabled = true;
-      document.body.appendChild(renderer.domElement);
-
-      // AR button
-      document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
-
-      // Light
-      const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-      light.position.set(0, 1, 0);
-      scene.add(light);
-
-      // Load 3D Heart
-      const loader = new GLTFLoader();
-      loader.load('realistic_human_heart.glb', (gltf) => {
-        heart = gltf.scene;
-        heart.scale.set(0.2, 0.2, 0.2); // adjust size if too big
-        heart.userData.rotate = false;  // rotation flag
-        scene.add(heart);
-      }, undefined, (error) => {
-        console.error(error);
-      });
-
-      // Click to rotate toggle
-      window.addEventListener('click', () => {
-        if (heart) heart.userData.rotate = !heart.userData.rotate;
-      });
-
-      // Handle resize
-      window.addEventListener('resize', onWindowResize);
-
-      // Animate
-      renderer.setAnimationLoop(animate);
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function animate() {
-      if (heart && heart.userData.rotate) {
-        heart.rotation.y += 0.01;  // rotation speed (Y axis)
-        heart.rotation.x += 0.005; // slight tilt rotation (X axis)
+    // toggle rotation on tap
+    model.addEventListener('click', () => {
+      if (model.hasAttribute('auto-rotate')) {
+        model.removeAttribute('auto-rotate');
+      } else {
+        model.setAttribute('auto-rotate', '');
       }
-      renderer.render(scene, camera);
-    }
+    });
   </script>
 </body>
 </html>

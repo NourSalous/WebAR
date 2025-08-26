@@ -54,10 +54,10 @@
 
       // Load 3D Heart
       const loader = new GLTFLoader();
-      loader.load('heart.glb', (gltf) => {
+      loader.load('realistic_human_heart.glb', (gltf) => {
         heart = gltf.scene;
-        heart.scale.set(0.2, 0.2, 0.2); // adjust size
-        heart.userData.rotate = false;    // rotation flag
+        heart.scale.set(0.2, 0.2, 0.2); // adjust size if too big
+        heart.userData.rotate = false;  // rotation flag
         scene.add(heart);
       }, undefined, (error) => {
         console.error(error);
@@ -91,3 +91,4 @@
   </script>
 </body>
 </html>
+

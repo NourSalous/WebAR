@@ -33,7 +33,7 @@
       border: 1px solid rgba(255, 80, 80, 0.6);
       color: #fff;
       padding: 6px 12px;
-      border-radius: 10px;
+      border-radius: 50%;
       font-size: 14px;
       font-family: sans-serif;
       cursor: pointer;
@@ -42,7 +42,7 @@
     }
 
     .hotspot:hover {
-      transform: scale(1.1);
+      transform: scale(1.2);
     }
   </style>
 </head>
@@ -59,11 +59,11 @@
     shadow-intensity="1"
     interaction-prompt="auto"
   >
-    <!-- Estimated outer valve hotspots -->
-    <button slot="hotspot-1" class="hotspot" data-position="0 0.06 0.12" data-normal="0 1 0">Aortic Valve</button>
-    <button slot="hotspot-2" class="hotspot" data-position="0 -0.06 0.12" data-normal="0 1 0">Mitral Valve</button>
-    <button slot="hotspot-3" class="hotspot" data-position="-0.06 0 0" data-normal="0 1 0">Pulmonary Valve</button>
-    <button slot="hotspot-4" class="hotspot" data-position="0.06 0 0" data-normal="0 1 0">Tricuspid Valve</button>
+    <!-- Hotspots for outer valves -->
+    <button slot="hotspot-1" class="hotspot" data-position="-0.003826 0.02331 -0.004144" data-normal="0 1 0">Aortic Valve</button>
+    <button slot="hotspot-2" class="hotspot" data-position="-0.01446 0.03159 -0.03705" data-normal="0 1 0">Pulmonary Valve</button>
+    <button slot="hotspot-3" class="hotspot" data-position="0.0028 -0.01718 -0.002642" data-normal="0 1 0">Mitral Valve</button>
+    <button slot="hotspot-4" class="hotspot" data-position="-0.01676 0.171 0.0317" data-normal="0 1 0">Tricuspid Valve</button>
   </model-viewer>
 
   <script>
@@ -73,4 +73,22 @@
     hotspots.forEach(hotspot => {
       hotspot.addEventListener("click", () => {
         switch(hotspot.innerText) {
-          case "Aortic
+          case "Aortic Valve":
+            viewer.cameraOrbit = "0deg 75deg 2.2m";
+            break;
+          case "Pulmonary Valve":
+            viewer.cameraOrbit = "90deg 75deg 2.2m";
+            break;
+          case "Mitral Valve":
+            viewer.cameraOrbit = "180deg 75deg 2.2m";
+            break;
+          case "Tricuspid Valve":
+            viewer.cameraOrbit = "270deg 75deg 2.2m";
+            break;
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heart AR</title>
 
-    <!-- Import model-viewer -->
+    <!-- Import model-viewer library -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
@@ -16,58 +16,29 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background: #000;
+        background: #fff; /* changed from black to white */
       }
       model-viewer {
         width: 100%;
         height: 100%;
       }
-      /* Advanced label style */
+
+      /* Advanced floating medical-style label */
       .hotspot {
-        background: rgba(220, 20, 60, 0.9);
-        color: #fff;
+        backdrop-filter: blur(8px);
+        background: rgba(255, 0, 0, 0.15);
+        border: 1px solid rgba(255, 80, 80, 0.6);
+        color: #d60000;
         padding: 8px 14px;
-        border-radius: 18px;
-        font-size: 16px;
-        font-weight: bold;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 14px;
+        font-size: 15px;
+        font-family: "Segoe UI", Roboto, sans-serif;
+        letter-spacing: 0.5px;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        animation: pulse 1.5s infinite;
       }
-    </style>
-  </head>
-  <body>
-    <model-viewer
-      id="heartViewer"
-      src="realistic_human_heart.glb"
-      ios-src="realistic_human_heart.usdz"
-      alt="3D Heart Model"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      camera-controls
-      shadow-intensity="1"
-      interaction-prompt="auto"
-    >
-      <!-- Label -->
-      <button
-        slot="hotspot-1"
-        class="hotspot"
-        data-position="0m 0.12m 0m"
-        data-normal="0m 1m 0m"
-      >
-        ❤️ Human Heart
-      </button>
-    </model-viewer>
 
-    <script>
-      const viewer = document.getElementById("heartViewer");
-      let currentAngle = 0;
-
-      // On model tap → rotate +90° each time
-      viewer.addEventListener("click", () => {
-        currentAngle += 90;
-        viewer.cameraOrbit = `${currentAngle}deg 75deg 2.5m`;
-      });
-    </script>
-  </body>
-</html>
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }

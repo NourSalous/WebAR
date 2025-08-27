@@ -1,104 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Heart AR</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heart AR</title>
 
-    <!-- Import model-viewer -->
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- Import model-viewer -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background: #fff; /* White background for web */
-      }
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #fff;
+    }
 
-      model-viewer {
-        width: 100%;
-        height: 100%;
-      }
+    model-viewer {
+      width: 100%;
+      height: 80%;
+      background-color: #fff;
+    }
 
-      /* Label style */
-      .hotspot {
-        display: none; /* Hidden initially */
-        backdrop-filter: blur(8px);
-        background: rgba(255, 0, 0, 0.3);
-        border: 1px solid rgba(255, 80, 80, 0.6);
-        color: #fff;
-        padding: 8px 14px;
-        border-radius: 14px;
-        font-size: 15px;
-        font-family: "Segoe UI", Roboto, sans-serif;
-        letter-spacing: 0.5px;
-        box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-        animation: pulse 1.5s infinite;
-      }
+    /* Button container */
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-      @keyframes pulse {
-        0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
-        50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.8); }
-        100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
-      }
-    </style>
-  </head>
+    .view-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 12px;
+      background-color: #e63946;
+      color: #fff;
+      font-weight: bold;
+      font-family: sans-serif;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
 
-  <body>
-    <model-viewer
-      id="heartViewer"
-      src="https://noursalous.github.io/WebAR/realistic_human_heart.glb"
-      ios-src="https://noursalous.github.io/WebAR/realistic_human_heart.usdz"
-      alt="3D Heart Model"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      camera-controls
-      shadow-intensity="1"
-      interaction-prompt="auto"
-    >
-      <!-- Label hotspot -->
-      <button
-        slot="hotspot-1"
-        class="hotspot"
-        data-position="0m 0.12m 0m"
-        data-normal="0m 1m 0m"
-      >
-        ❤️ Human Heart
-      </button>
-    </model-viewer>
+    .view-button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
 
-    <script>
-      const viewer = document.getElementById("heartViewer");
-      const label = document.querySelector(".hotspot");
+  <model-viewer
+    id="heartViewer"
+    src="https://noursalous.github.io/WebAR/realistic_human_heart.glb"
+    ios-src="https://noursalous.github.io/WebAR/realistic_human_heart.usdz"
+    alt="3D Heart Model"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    camera-controls
+    shadow-intensity="1"
+    interaction-prompt="auto"
+  >
+  </model-viewer>
 
-      // Predefined camera angles for glimpses
-      const cameraPositions = [
-        "0deg 75deg 2.5m",    // Front
-        "45deg 75deg 2.5m",   // Slight right
-        "90deg 75deg 2.5m",   // Right
-        "135deg 75deg 2.5m",  // Back-right
-        "180deg 75deg 2.5m",  // Back
-        "225deg 75deg 2.5m",  // Back-left
-        "270deg 75deg 2.5m",  // Left
-        "315deg 75deg 2.5m"   // Front-left
-      ];
+  <div class="buttons">
+    <button class="view-button" data-angle="0deg">Front</button>
+    <button class="view-button" data-angle="90deg">Right</button>
+    <button class="view-button" data-angle="180deg">Back</button>
+    <button class="view-button" data-angle="270deg">Left</button>
+  </div>
 
-      let currentIndex = -1; // start before first angle
+  <script>
+    const viewer = document.getElementById("heartViewer");
+    const buttons = document.querySelectorAll(".view-button");
 
-      viewer.addEventListener("click", () => {
-        // Show label on first click
-        if (label.style.display === "none") {
-          label.style.display = "block";
-        }
-
-        // Cycle through camera angles
-        currentIndex = (currentIndex + 1) % cameraPositions.length;
-        viewer.cameraOrbit = cameraPositions[currentIndex];
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const angle = btn.getAttribute("data-angle");
+        viewer.cameraOrbit = `${angle} 75deg 2.5m`; // rotate to chosen view
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
 </html>

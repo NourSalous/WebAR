@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Heart AR - Main Vessels</title>
+  <title>Heart AR - Labeled Vessels</title>
 
-  <!-- Import Model-Viewer -->
+  <!-- Model-Viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
     body {
       margin: 0;
       padding: 0;
+      height: 100vh;
+      background-color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: #fff;
     }
 
     model-viewer {
@@ -25,28 +25,38 @@
       background-color: #fff;
     }
 
-    /* Hotspot style: spherical red pins */
+    /* Red spherical pins for vessels */
     .hotspot {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      background: rgba(255,0,0,0.8);
+      background: rgba(255,0,0,0.85);
       border: 1px solid rgba(255,80,80,0.9);
+      box-shadow: 0 0 10px rgba(255,0,0,0.6);
       cursor: pointer;
-      box-shadow: 0 0 8px rgba(255,0,0,0.6);
-      font-size: 0; /* hide inner text but keep accessible */
+      position: relative;
     }
 
-    /* Label styles for accessibility (optional) */
-    .hotspot-label {
+    /* Floating label style */
+    .label {
       position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,0,0,0.85);
       color: #fff;
-      font-size: 14px;
-      font-family: sans-serif;
-      background: rgba(255,0,0,0.6);
-      padding: 2px 6px;
+      padding: 4px 8px;
       border-radius: 6px;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
       pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .hotspot:hover .label {
+      opacity: 1;
     }
   </style>
 </head>
@@ -63,10 +73,18 @@
     shadow-intensity="1"
     interaction-prompt="auto"
   >
-    <!-- Hotspots on the main vessels using exact coordinates -->
-    <button slot="hotspot-1" class="hotspot" data-position="0.01576 -0.003249 0.04938" data-normal="0 1 0" aria-label="Aorta"></button>
-    <button slot="hotspot-2" class="hotspot" data-position="0.0547 0.07576 -0.02555" data-normal="0 1 0" aria-label="Pulmonary Arteries"></button>
-    <button slot="hotspot-3" class="hotspot" data-position="-0.006237 -0.01816 -0.0365" data-normal="0 1 0" aria-label="Superior Vena Cava"></button>
+    <!-- Hotspots with labels -->
+    <button slot="hotspot-1" class="hotspot" data-position="0.01576 -0.003249 0.04938" data-normal="0 1 0">
+      <span class="label">Aorta</span>
+    </button>
+
+    <button slot="hotspot-2" class="hotspot" data-position="0.0547 0.07576 -0.02555" data-normal="0 1 0">
+      <span class="label">Pulmonary Arteries</span>
+    </button>
+
+    <button slot="hotspot-3" class="hotspot" data-position="-0.006237 -0.01816 -0.0365" data-normal="0 1 0">
+      <span class="label">Superior Vena Cava</span>
+    </button>
   </model-viewer>
 
   <script>
@@ -75,7 +93,7 @@
 
     hotspots.forEach(hotspot => {
       hotspot.addEventListener("click", () => {
-        const label = hotspot.getAttribute("aria-label");
+        const label = hotspot.querySelector(".label").textContent;
         switch(label) {
           case "Aorta":
             viewer.cameraOrbit = "0deg 75deg 2.2m";

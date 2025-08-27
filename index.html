@@ -59,11 +59,10 @@
     shadow-intensity="1"
     interaction-prompt="auto"
   >
-    <!-- Hotspots on main outer vessels -->
+    <!-- Hotspots on main vessels using exact coordinates -->
     <button slot="hotspot-1" class="hotspot" data-position="-0.003826 0.02331 -0.004144" data-normal="0 1 0">Aorta</button>
     <button slot="hotspot-2" class="hotspot" data-position="-0.01446 0.03159 -0.03705" data-normal="0 1 0">Pulmonary Artery</button>
     <button slot="hotspot-3" class="hotspot" data-position="0.0028 -0.01718 -0.002642" data-normal="0 1 0">Superior Vena Cava</button>
-    <button slot="hotspot-4" class="hotspot" data-position="-0.01676 0.171 0.0317" data-normal="0 1 0">Pulmonary Vein</button>
   </model-viewer>
 
   <script>
@@ -81,9 +80,6 @@
             break;
           case "Superior Vena Cava":
             viewer.cameraOrbit = "120deg 75deg 2.2m";
-            break;
-          case "Pulmonary Vein":
-            viewer.cameraOrbit = "180deg 75deg 2.2m";
             break;
         }
       });

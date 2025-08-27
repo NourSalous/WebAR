@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heart AR</title>
 
-    <!-- Import model-viewer library -->
+    <!-- Import model-viewer -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
@@ -16,15 +16,17 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background: #fff;
+        background: #fff; /* White background for web */
       }
+
       model-viewer {
         width: 100%;
         height: 100%;
       }
 
-      /* Advanced floating medical-style label */
+      /* Label style */
       .hotspot {
+        display: none; /* Hidden initially */
         backdrop-filter: blur(8px);
         background: rgba(255, 0, 0, 0.3);
         border: 1px solid rgba(255, 80, 80, 0.6);
@@ -39,33 +41,26 @@
       }
 
       @keyframes pulse {
-        0% {
-          box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
-        }
-        50% {
-          box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
-        }
-        100% {
-          box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
-        }
+        0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
+        50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.8); }
+        100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
       }
     </style>
   </head>
+
   <body>
     <model-viewer
       id="heartViewer"
-      src="realistic_human_heart.glb"
+      src="https://noursalous.github.io/WebAR/realistic_human_heart.glb"
+      ios-src="https://noursalous.github.io/WebAR/realistic_human_heart.usdz"
       alt="3D Heart Model"
       ar
-      ar-modes="scene-viewer webxr quick-look"
-      ar-scale="fixed"
+      ar-modes="webxr scene-viewer quick-look"
       camera-controls
       shadow-intensity="1"
       interaction-prompt="auto"
-      auto-rotate
-      quick-look-browsers="safari chrome"
     >
-      <!-- Floating medical label -->
+      <!-- Label hotspot -->
       <button
         slot="hotspot-1"
         class="hotspot"
@@ -76,22 +71,33 @@
       </button>
     </model-viewer>
 
-    <!-- Fallback AR link for Android Scene Viewer -->
-    <a
-      id="ar-fallback"
-      href="intent://arvr.google.com/scene-viewer/1.0?file=https://YOUR-HTTPS-LINK/realistic_human_heart.glb&mode=ar_preferred#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;end;"
-      rel="ar"
-      style="display: none;"
-    ></a>
-
     <script>
       const viewer = document.getElementById("heartViewer");
-      let currentAngle = 0;
+      const label = document.querySelector(".hotspot");
 
-      // On tap, rotate +90° each time
+      // Predefined camera angles for glimpses
+      const cameraPositions = [
+        "0deg 75deg 2.5m",    // Front
+        "45deg 75deg 2.5m",   // Slight right
+        "90deg 75deg 2.5m",   // Right
+        "135deg 75deg 2.5m",  // Back-right
+        "180deg 75deg 2.5m",  // Back
+        "225deg 75deg 2.5m",  // Back-left
+        "270deg 75deg 2.5m",  // Left
+        "315deg 75deg 2.5m"   // Front-left
+      ];
+
+      let currentIndex = -1; // start before first angle
+
       viewer.addEventListener("click", () => {
-        currentAngle += 90;
-        viewer.cameraOrbit = `${currentAngle}deg 75deg 2.5m`;
+        // Show label on first click
+        if (label.style.display === "none") {
+          label.style.display = "block";
+        }
+
+        // Cycle through camera angles
+        currentIndex = (currentIndex + 1) % cameraPositions.length;
+        viewer.cameraOrbit = cameraPositions[currentIndex];
       });
     </script>
   </body>

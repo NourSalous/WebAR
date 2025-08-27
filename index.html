@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heart AR</title>
 
-    <!-- Import model-viewer library -->
+    <!-- Import model-viewer -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
@@ -22,23 +22,17 @@
         width: 100%;
         height: 100%;
       }
-
-      /* Label styling (more advanced look for a realistic heart) */
+      /* Advanced label style */
       .hotspot {
-        background: rgba(139, 0, 0, 0.9);
+        background: rgba(220, 20, 60, 0.9);
         color: #fff;
         padding: 8px 14px;
-        border-radius: 16px;
-        font-size: 15px;
-        font-family: "Segoe UI", Tahoma, sans-serif;
+        border-radius: 18px;
+        font-size: 16px;
         font-weight: bold;
-        box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         border: 1px solid rgba(255, 255, 255, 0.3);
-        backdrop-filter: blur(6px);
-        transition: transform 0.2s ease-in-out;
-      }
-      .hotspot:hover {
-        transform: scale(1.1);
       }
     </style>
   </head>
@@ -46,14 +40,15 @@
     <model-viewer
       id="heartViewer"
       src="realistic_human_heart.glb"
+      ios-src="realistic_human_heart.usdz"
       alt="3D Heart Model"
       ar
       ar-modes="webxr scene-viewer quick-look"
       camera-controls
       shadow-intensity="1"
-      auto-rotate
+      interaction-prompt="auto"
     >
-      <!-- Floating medical label -->
+      <!-- Label -->
       <button
         slot="hotspot-1"
         class="hotspot"
@@ -68,7 +63,7 @@
       const viewer = document.getElementById("heartViewer");
       let currentAngle = 0;
 
-      // Rotate 90° on each tap
+      // On model tap → rotate +90° each time
       viewer.addEventListener("click", () => {
         currentAngle += 90;
         viewer.cameraOrbit = `${currentAngle}deg 75deg 2.5m`;
@@ -76,4 +71,3 @@
     </script>
   </body>
 </html>
-

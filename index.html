@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Heart AR</title>
+  <title>Heart AR - Valves</title>
 
-  <!-- Import model-viewer -->
+  <!-- model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
@@ -26,29 +26,23 @@
       background-color: #fff;
     }
 
-    /* Button container */
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .view-button {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 12px;
-      background-color: #e63946;
+    /* Hotspot buttons */
+    .hotspot {
+      backdrop-filter: blur(6px);
+      background: rgba(255, 0, 0, 0.3);
+      border: 1px solid rgba(255, 80, 80, 0.6);
       color: #fff;
-      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 14px;
       font-family: sans-serif;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 0 10px rgba(255,0,0,0.5);
       transition: transform 0.2s;
     }
 
-    .view-button:hover {
-      transform: scale(1.05);
+    .hotspot:hover {
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -65,25 +59,36 @@
     shadow-intensity="1"
     interaction-prompt="auto"
   >
+    <!-- Outer valve hotspots -->
+    <button slot="hotspot-1" class="hotspot" data-position="0 0.05 0.1" data-normal="0 1 0">Aortic Valve</button>
+    <button slot="hotspot-2" class="hotspot" data-position="0 -0.05 0.1" data-normal="0 1 0">Mitral Valve</button>
+    <button slot="hotspot-3" class="hotspot" data-position="-0.05 0 0" data-normal="0 1 0">Pulmonary Valve</button>
+    <button slot="hotspot-4" class="hotspot" data-position="0.05 0 0" data-normal="0 1 0">Tricuspid Valve</button>
   </model-viewer>
-
-  <div class="buttons">
-    <button class="view-button" data-angle="0deg">Front</button>
-    <button class="view-button" data-angle="90deg">Right</button>
-    <button class="view-button" data-angle="180deg">Back</button>
-    <button class="view-button" data-angle="270deg">Left</button>
-  </div>
 
   <script>
     const viewer = document.getElementById("heartViewer");
-    const buttons = document.querySelectorAll(".view-button");
+    const hotspots = document.querySelectorAll(".hotspot");
 
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const angle = btn.getAttribute("data-angle");
-        viewer.cameraOrbit = `${angle} 75deg 2.5m`; // rotate to chosen view
+    hotspots.forEach(hotspot => {
+      hotspot.addEventListener("click", () => {
+        switch(hotspot.innerText) {
+          case "Aortic Valve":
+            viewer.cameraOrbit = "0deg 75deg 2.2m";
+            break;
+          case "Mitral Valve":
+            viewer.cameraOrbit = "45deg 75deg 2.2m";
+            break;
+          case "Pulmonary Valve":
+            viewer.cameraOrbit = "90deg 75deg 2.2m";
+            break;
+          case "Tricuspid Valve":
+            viewer.cameraOrbit = "135deg 75deg 2.2m";
+            break;
+        }
       });
     });
   </script>
+
 </body>
 </html>

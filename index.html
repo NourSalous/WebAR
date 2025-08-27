@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Heart AR - Valves</title>
+  <title>Heart AR - Outer Valves</title>
 
   <!-- model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -29,7 +29,7 @@
     /* Hotspot buttons */
     .hotspot {
       backdrop-filter: blur(6px);
-      background: rgba(255, 0, 0, 0.3);
+      background: rgba(255, 0, 0, 0.4);
       border: 1px solid rgba(255, 80, 80, 0.6);
       color: #fff;
       padding: 6px 12px;
@@ -59,11 +59,11 @@
     shadow-intensity="1"
     interaction-prompt="auto"
   >
-    <!-- Outer valve hotspots -->
-    <button slot="hotspot-1" class="hotspot" data-position="0 0.05 0.1" data-normal="0 1 0">Aortic Valve</button>
-    <button slot="hotspot-2" class="hotspot" data-position="0 -0.05 0.1" data-normal="0 1 0">Mitral Valve</button>
-    <button slot="hotspot-3" class="hotspot" data-position="-0.05 0 0" data-normal="0 1 0">Pulmonary Valve</button>
-    <button slot="hotspot-4" class="hotspot" data-position="0.05 0 0" data-normal="0 1 0">Tricuspid Valve</button>
+    <!-- Estimated outer valve hotspots -->
+    <button slot="hotspot-1" class="hotspot" data-position="0 0.06 0.12" data-normal="0 1 0">Aortic Valve</button>
+    <button slot="hotspot-2" class="hotspot" data-position="0 -0.06 0.12" data-normal="0 1 0">Mitral Valve</button>
+    <button slot="hotspot-3" class="hotspot" data-position="-0.06 0 0" data-normal="0 1 0">Pulmonary Valve</button>
+    <button slot="hotspot-4" class="hotspot" data-position="0.06 0 0" data-normal="0 1 0">Tricuspid Valve</button>
   </model-viewer>
 
   <script>
@@ -73,22 +73,4 @@
     hotspots.forEach(hotspot => {
       hotspot.addEventListener("click", () => {
         switch(hotspot.innerText) {
-          case "Aortic Valve":
-            viewer.cameraOrbit = "0deg 75deg 2.2m";
-            break;
-          case "Mitral Valve":
-            viewer.cameraOrbit = "45deg 75deg 2.2m";
-            break;
-          case "Pulmonary Valve":
-            viewer.cameraOrbit = "90deg 75deg 2.2m";
-            break;
-          case "Tricuspid Valve":
-            viewer.cameraOrbit = "135deg 75deg 2.2m";
-            break;
-        }
-      });
-    });
-  </script>
-
-</body>
-</html>
+          case "Aortic

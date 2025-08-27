@@ -23,31 +23,22 @@
         height: 100%;
       }
 
-      /* Advanced floating medical-style label */
+      /* Label styling (more advanced look for a realistic heart) */
       .hotspot {
-        backdrop-filter: blur(8px);
-        background: rgba(255, 0, 0, 0.3);
-        border: 1px solid rgba(255, 80, 80, 0.6);
+        background: rgba(139, 0, 0, 0.9);
         color: #fff;
         padding: 8px 14px;
-        border-radius: 14px;
+        border-radius: 16px;
         font-size: 15px;
-        font-family: "Segoe UI", Roboto, sans-serif;
-        letter-spacing: 0.5px;
-        box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-        animation: pulse 1.5s infinite;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        font-weight: bold;
+        box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(6px);
+        transition: transform 0.2s ease-in-out;
       }
-
-      @keyframes pulse {
-        0% {
-          box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
-        }
-        50% {
-          box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
-        }
-        100% {
-          box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
-        }
+      .hotspot:hover {
+        transform: scale(1.1);
       }
     </style>
   </head>
@@ -57,13 +48,10 @@
       src="realistic_human_heart.glb"
       alt="3D Heart Model"
       ar
-      ar-modes="scene-viewer webxr quick-look"
-      ar-scale="fixed"
+      ar-modes="webxr"
       camera-controls
       shadow-intensity="1"
-      interaction-prompt="auto"
       auto-rotate
-      quick-look-browsers="safari chrome"
     >
       <!-- Floating medical label -->
       <button
@@ -76,19 +64,11 @@
       </button>
     </model-viewer>
 
-    <!-- Fallback AR link for Android Scene Viewer -->
-    <a
-      id="ar-fallback"
-      href="intent://arvr.google.com/scene-viewer/1.0?file=https://YOUR-HTTPS-LINK/realistic_human_heart.glb&mode=ar_preferred#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;end;"
-      rel="ar"
-      style="display: none;"
-    ></a>
-
     <script>
       const viewer = document.getElementById("heartViewer");
       let currentAngle = 0;
 
-      // On tap, rotate +90° each time
+      // Rotate 90° on each tap
       viewer.addEventListener("click", () => {
         currentAngle += 90;
         viewer.cameraOrbit = `${currentAngle}deg 75deg 2.5m`;

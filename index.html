@@ -131,9 +131,9 @@
       const hotspot = document.getElementById(hotspotId);
       hotspot.classList.add("active");
 
-      // Animate camera orbit + target
-      viewer.cameraTarget = target;
-      viewer.cameraOrbit = orbit;
+      // Correctly set camera orbit and target
+      viewer.setAttribute('camera-orbit', orbit);
+      viewer.setAttribute('camera-target', target);
     }
 
     // Button actions
@@ -152,28 +152,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

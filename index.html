@@ -10,57 +10,59 @@
       margin: 0;
       padding: 0;
       background: #fff; /* White background */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       height: 100vh;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       font-family: Arial, sans-serif;
-      color: black;
     }
 
     model-viewer {
       width: 100vw;
       height: 100vh;
-      background-color: #fff; /* White background */
-      padding-bottom: 40px; /* leaves space for phone UI */
-      box-sizing: border-box;
+      background-color: #fff;
     }
 
     /* Hotspot styling */
     .hotspot {
-      background: rgba(255, 0, 0, 0.85);
+      background: rgba(255, 0, 0, 0.9);
       border-radius: 50%;
       width: 18px;
       height: 18px;
       border: 2px solid white;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    .hotspot.visible {
-      opacity: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .label {
+      display: none;
       background: rgba(0,0,0,0.7);
       color: white;
-      padding: 2px 6px;
+      padding: 4px 8px;
       border-radius: 6px;
-      font-size: 12px;
-      margin-left: 6px;
+      font-size: 14px;
+      margin-left: 8px;
       white-space: nowrap;
     }
 
-    /* Buttons panel */
+    .hotspot.active .label {
+      display: inline-block;
+    }
+
+    /* Controls (first panel style) */
     .controls {
       position: absolute;
-      bottom: 10px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 10px;
-      z-index: 5;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 10;
     }
     .controls button {
       padding: 8px 14px;
@@ -68,18 +70,19 @@
       border: none;
       cursor: pointer;
       font-size: 14px;
-      background: #ff5252;
+      background: #e63946;
       color: white;
       font-weight: bold;
+      transition: background 0.3s;
     }
     .controls button:hover {
-      background: #ff7676;
+      background: #ff4d5e;
     }
   </style>
 </head>
 <body>
 
-  <!-- 3D viewer -->
+  <!-- 3D Viewer -->
   <model-viewer id="heartViewer"
     src="realistic_human_heart.glb"
     camera-controls
@@ -89,58 +92,12 @@
     field-of-view="45deg"
     style="--poster-color: transparent;">
 
-    <!-- Hotspots (new positions you gave) -->
-    <button class="hotspot" slot="hotspot-svc"
+    <!-- Hotspots -->
+    <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
       data-position="-0.30636m 0.60664m 0.14067m"
       data-normal="0m 1m 0m">
       <span class="label">Superior Vena Cava</span>
     </button>
 
-    <button class="hotspot" slot="hotspot-pa"
-      data-position="0.42889m 0.39424m 0.096125m"
-      data-normal="0m 1m 0m">
-      <span class="label">Pulmonary Arteries</span>
-    </button>
-
-    <button class="hotspot" slot="hotspot-aorta"
-      data-position="0.007647m 0.5969m 0.0093m"
-      data-normal="0m 1m 0m">
-      <span class="label">Aorta</span>
-    </button>
-  </model-viewer>
-
-  <!-- Buttons -->
-  <div class="controls">
-    <button id="btn-svc">Superior Vena Cava</button>
-    <button id="btn-pa">Pulmonary Arteries</button>
-    <button id="btn-aorta">Aorta</button>
-  </div>
-
-  <script>
-    const viewer = document.querySelector("#heartViewer");
-    const hotspots = document.querySelectorAll(".hotspot");
-
-    // Show hotspots only when zoomed in close enough
-    viewer.addEventListener("camera-change", () => {
-      const orbit = viewer.getCameraOrbit();
-      if (orbit.radius < 1.0) { // adjust threshold as needed
-        hotspots.forEach(h => h.classList.add("visible"));
-      } else {
-        hotspots.forEach(h => h.classList.remove("visible"));
-      }
-    });
-
-    // Camera angle per button
-    document.querySelector("#btn-svc").addEventListener("click", () => {
-      viewer.cameraOrbit = "-60deg 70deg 0.8m"; // front-left close view
-    });
-    document.querySelector("#btn-pa").addEventListener("click", () => {
-      viewer.cameraOrbit = "180deg 70deg 0.8m"; // back view
-    });
-    document.querySelector("#btn-aorta").addEventListener("click", () => {
-      viewer.cameraOrbit = "0deg 70deg 0.8m"; // front view
-    });
-  </script>
-
-</body>
-</html>
+    <button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
+      data-position

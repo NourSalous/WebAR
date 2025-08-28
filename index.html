@@ -1,154 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Heart Model</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #fff;
-      height: 100vh;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Heart 3D Viewer</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      model-viewer {
+        width: 100%;
+        height: 80vh;
+        background: white;
+      }
+      .controls {
+        display: flex;
+        gap: 1rem;
+        margin: 1rem;
+      }
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 12px;
+        background: #0077ff;
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      button:hover {
+        background: #005fcc;
+      }
+      .label {
+        position: absolute;
+        background: rgba(255,255,255,0.9);
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <model-viewer id="heartViewer"
+      src="heart.glb"
+      alt="3D Heart"
+      camera-controls
+      interaction-prompt="none"
+      exposure="1"
+      auto-rotate="false"
+      ar
+      style="background-color:white;">
+    </model-viewer>
 
-    model-viewer {
-      width: 100vw;
-      height: 100vh;
-      background-color: #fff;
-    }
+    <div class="controls">
+      <button id="btnAorta">Aorta</button>
+      <button id="btnPulmonary">Pulmonary Arteries</button>
+      <button id="btnSVC">Superior Vena Cava</button>
+    </div>
 
-    /* Hotspot styling */
-    .hotspot {
-      background: rgba(255, 0, 0, 0.9);
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      border: 2px solid white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+    <div id="label" class="label"></div>
 
-    .label {
-      display: none;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-left: 8px;
-      white-space: nowrap;
-    }
+    <script>
+      const viewer = document.getElementById("heartViewer");
+      const label = document.getElementById("label");
 
-    .hotspot.active .label {
-      display: inline-block;
-    }
+      function showLabel(name) {
+        label.textContent = name;
+        label.style.display = "block";
+        // Place label always at center of viewer
+        const rect = viewer.getBoundingClientRect();
+        label.style.left = rect.left + rect.width / 2 - label.offsetWidth / 2 + "px";
+        label.style.top = rect.top + 20 + "px";
+      }
 
-    /* Controls */
-    .controls {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 12px;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 10px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      z-index: 1000; /* make sure it's above the model */
-    }
-    .controls button {
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      background: #e63946;
-      color: white;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-    .controls button:hover {
-      background: #ff4d5e;
-    }
-  </style>
-</head>
-<body>
+      // --- Camera presets ---
+      const views = {
+        Aorta: {
+          target: "0.007647m 0.5969m 0.0093m",
+          orbit: "0deg 75deg 1.5m"
+        },
+        Pulmonary: {
+          target: "0.42889m 0.39424m 0.096125m",
+          orbit: "180deg 70deg 1.6m"
+        },
+        SVC: {
+          target: "-0.30636m 0.60664m 0.14067m",
+          orbit: "-90deg 70deg 1.6m"
+        }
+      };
 
-  <!-- 3D Viewer -->
-  <model-viewer id="heartViewer"
-    src="realistic_human_heart.glb"
-    camera-controls
-    interaction-prompt="none"
-    shadow-intensity="1"
-    camera-orbit="0deg 75deg 1.5m"
-    field-of-view="45deg"
-    style="--poster-color: transparent;"
-    animation-name="none"
-    ar>
-    
-    <!-- Hotspots -->
-    <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
-      data-position="-0.30636m 0.60664m 0.14067m"
-      data-normal="0m 1m 0m">
-      <span class="label">Superior Vena Cava</span>
-    </button>
+      // --- Button actions ---
+      document.getElementById("btnAorta").addEventListener("click", () => {
+        viewer.cameraTarget = views.Aorta.target;
+        viewer.cameraOrbit = views.Aorta.orbit;
+        showLabel("Aorta");
+      });
 
-    <button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
-      data-position="0.42889m 0.39424m 0.096125m"
-      data-normal="0m 1m 0m">
-      <span class="label">Pulmonary Arteries</span>
-    </button>
+      document.getElementById("btnPulmonary").addEventListener("click", () => {
+        viewer.cameraTarget = views.Pulmonary.target;
+        viewer.cameraOrbit = views.Pulmonary.orbit;
+        showLabel("Pulmonary Arteries");
+      });
 
-    <button id="hotspot-aorta" class="hotspot" slot="hotspot-aorta"
-      data-position="0.007647m 0.5969m 0.0093m"
-      data-normal="0m 1m 0m">
-      <span class="label">Aorta</span>
-    </button>
-  </model-viewer>
-
-  <!-- Controls -->
-  <div class="controls">
-    <button id="btn-svc">Superior Vena Cava</button>
-    <button id="btn-pa">Pulmonary Arteries</button>
-    <button id="btn-aorta">Aorta</button>
-  </div>
-
-  <script>
-    const viewer = document.querySelector("#heartViewer");
-    const hotspots = document.querySelectorAll(".hotspot");
-
-    function focusOnPart(hotspotId, orbit, target) {
-      // Reset labels
-      hotspots.forEach(h => h.classList.remove("active"));
-
-      // Activate selected hotspot
-      const hotspot = document.getElementById(hotspotId);
-      hotspot.classList.add("active");
-
-      // Animate camera orbit + target
-      viewer.cameraTarget = target;
-      viewer.cameraOrbit = orbit;
-    }
-
-    // Button actions
-    document.querySelector("#btn-svc").addEventListener("click", () => {
-      focusOnPart("hotspot-svc", "-40deg 65deg 0.6m", "-0.30636m 0.60664m 0.14067m");
-    });
-
-    document.querySelector("#btn-pa").addEventListener("click", () => {
-      focusOnPart("hotspot-pa", "160deg 70deg 0.65m", "0.42889m 0.39424m 0.096125m");
-    });
-
-    document.querySelector("#btn-aorta").addEventListener("click", () => {
-      focusOnPart("hotspot-aorta", "10deg 70deg 0.6m", "0.007647m 0.5969m 0.0093m");
-    });
-  </script>
-
-</body>
+      document.getElementById("btnSVC").addEventListener("click", () => {
+        viewer.cameraTarget = views.SVC.target;
+        viewer.cameraOrbit = views.SVC.orbit;
+        showLabel("Superior Vena Cava");
+      });
+    </script>
+  </body>
 </html>

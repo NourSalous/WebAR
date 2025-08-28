@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Heart AR Hybrid</title>
+  <title>Heart Anatomy Viewer</title>
 
   <!-- Import model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -49,7 +49,7 @@
       background: #ff6b6b;
     }
 
-    /* Pin style */
+    /* Hotspot style */
     .hotspot {
       backdrop-filter: blur(8px);
       background: rgba(255, 0, 0, 0.8);
@@ -61,6 +61,7 @@
       font-family: "Segoe UI", Roboto, sans-serif;
       white-space: nowrap;
       box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+      display: none; /* 🔴 hide until zoomed */
     }
   </style>
 </head>
@@ -77,21 +78,21 @@
     shadow-intensity="1"
     interaction-prompt="auto">
 
-    <!-- Hotspots -->
-    <button slot="hotspot-svc" class="hotspot"
-      data-position="-0.3205 0.16538 -0.73637"
+    <!-- Hotspots with your new coordinates -->
+    <button id="svcHotspot" slot="hotspot-svc" class="hotspot"
+      data-position="-1.9021 4.1333 1.0318"
       data-normal="0 1 0">
       Superior Vena Cava
     </button>
 
-    <button slot="hotspot-pa" class="hotspot"
-      data-position="0.4428 0.094358 -0.42333"
+    <button id="paHotspot" slot="hotspot-pa" class="hotspot"
+      data-position="1.3154 2.4095 0.73506"
       data-normal="0 1 0">
       Pulmonary Arteries
     </button>
 
-    <button slot="hotspot-aorta" class="hotspot"
-      data-position="-0.083912 0.2039 -0.50432"
+    <button id="aortaHotspot" slot="hotspot-aorta" class="hotspot"
+      data-position="0.61246 3.6339 -0.16765"
       data-normal="0 1 0">
       Aorta
     </button>
@@ -106,30 +107,44 @@
 
   <script>
     const viewer = document.getElementById("heartViewer");
+    const hotspots = {
+      svc: document.getElementById("svcHotspot"),
+      pa: document.getElementById("paHotspot"),
+      aorta: document.getElementById("aortaHotspot")
+    };
 
-    // Focus function
+    // Hide all hotspots
+    function hideAllHotspots() {
+      Object.values(hotspots).forEach(h => h.style.display = "none");
+    }
+
+    // Focus on part with camera + show hotspot
     function focusPart(part) {
+      hideAllHotspots();
       let target = "";
       let orbit = "";
 
       switch(part) {
         case "svc":
-          target = "-0.3205m 0.16538m -0.73637m";
-          orbit = "45deg 70deg 1.2m"; // Camera position
+          target = "-1.9021m 4.1333m 1.0318m";
+          orbit = "0deg 70deg 2m"; // 🔹 front view
           break;
         case "pa":
-          target = "0.4428m 0.094358m -0.42333m";
-          orbit = "90deg 70deg 1.2m";
+          target = "1.3154m 2.4095m 0.73506m";
+          orbit = "180deg 75deg 2.2m"; // 🔹 back view
           break;
         case "aorta":
-          target = "-0.083912m 0.2039m -0.50432m";
-          orbit = "0deg 65deg 1.2m";
+          target = "0.61246m 3.6339m -0.16765m";
+          orbit = "20deg 65deg 2m"; // 🔹 front view
           break;
       }
 
       viewer.setAttribute("camera-target", target);
       viewer.setAttribute("camera-orbit", orbit);
       viewer.setAttribute("field-of-view", "20deg");
+
+      // show hotspot
+      hotspots[part].style.display = "block";
     }
   </script>
 </body>

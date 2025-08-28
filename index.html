@@ -9,7 +9,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: #111;
+      background: #fff; /* White background */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -17,13 +17,13 @@
       height: 100vh;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      color: white;
+      color: black;
     }
 
     model-viewer {
       width: 100vw;
       height: 100vh;
-      background-color: #111;
+      background-color: #fff; /* White background */
       padding-bottom: 40px; /* leaves space for phone UI */
       box-sizing: border-box;
     }
@@ -83,28 +83,27 @@
   <model-viewer id="heartViewer"
     src="realistic_human_heart.glb"
     camera-controls
-    auto-rotate
     interaction-prompt="none"
     shadow-intensity="1"
-    camera-orbit="0deg 75deg 3m"
+    camera-orbit="0deg 75deg 1.5m"
     field-of-view="45deg"
     style="--poster-color: transparent;">
 
-    <!-- Hotspots -->
+    <!-- Hotspots (new positions you gave) -->
     <button class="hotspot" slot="hotspot-svc"
-      data-position="-1.9021m 4.1333m 1.0318m"
+      data-position="-0.30636m 0.60664m 0.14067m"
       data-normal="0m 1m 0m">
       <span class="label">Superior Vena Cava</span>
     </button>
 
     <button class="hotspot" slot="hotspot-pa"
-      data-position="1.3154m 2.4095m 0.73506m"
+      data-position="0.42889m 0.39424m 0.096125m"
       data-normal="0m 1m 0m">
       <span class="label">Pulmonary Arteries</span>
     </button>
 
     <button class="hotspot" slot="hotspot-aorta"
-      data-position="0.61246m 3.6339m -0.16765m"
+      data-position="0.007647m 0.5969m 0.0093m"
       data-normal="0m 1m 0m">
       <span class="label">Aorta</span>
     </button>
@@ -124,7 +123,7 @@
     // Show hotspots only when zoomed in close enough
     viewer.addEventListener("camera-change", () => {
       const orbit = viewer.getCameraOrbit();
-      if (orbit.radius < 2.0) { // adjust threshold as needed
+      if (orbit.radius < 1.0) { // adjust threshold as needed
         hotspots.forEach(h => h.classList.add("visible"));
       } else {
         hotspots.forEach(h => h.classList.remove("visible"));
@@ -133,13 +132,13 @@
 
     // Camera angle per button
     document.querySelector("#btn-svc").addEventListener("click", () => {
-      viewer.cameraOrbit = "-60deg 70deg 1.6m"; // front-left view
+      viewer.cameraOrbit = "-60deg 70deg 0.8m"; // front-left close view
     });
     document.querySelector("#btn-pa").addEventListener("click", () => {
-      viewer.cameraOrbit = "180deg 70deg 1.6m"; // back view
+      viewer.cameraOrbit = "180deg 70deg 0.8m"; // back view
     });
     document.querySelector("#btn-aorta").addEventListener("click", () => {
-      viewer.cameraOrbit = "0deg 70deg 1.6m"; // front view
+      viewer.cameraOrbit = "0deg 70deg 0.8m"; // front view
     });
   </script>
 

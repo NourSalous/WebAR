@@ -1,67 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Heart AR - Labeled Vessels</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heart AR Hybrid</title>
 
-  <!-- Model-Viewer -->
+  <!-- Import model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
     body {
       margin: 0;
       padding: 0;
-      height: 100vh;
-      background-color: #fff;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background: #fff;
     }
 
     model-viewer {
+      flex: 1;
       width: 100%;
       height: 100%;
-      background-color: #fff;
     }
 
-    /* Red spherical pins for vessels */
-    .hotspot {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: rgba(255,0,0,0.85);
-      border: 1px solid rgba(255,80,80,0.9);
-      box-shadow: 0 0 10px rgba(255,0,0,0.6);
+    /* Control panel */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      background: #222;
+    }
+
+    .controls button {
+      padding: 10px 16px;
+      background: #ff3b3b;
+      color: white;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      position: relative;
-    }
-
-    /* Floating label style */
-    .label {
-      position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255,0,0,0.85);
-      color: #fff;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-family: "Segoe UI", Roboto, sans-serif;
       font-size: 14px;
-      pointer-events: none;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 0.3s;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      transition: background 0.3s;
     }
 
-    .hotspot:hover .label {
-      opacity: 1;
+    .controls button:hover {
+      background: #ff6b6b;
+    }
+
+    /* Pin style */
+    .hotspot {
+      backdrop-filter: blur(8px);
+      background: rgba(255, 0, 0, 0.8);
+      border: 1px solid rgba(255, 80, 80, 0.9);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      white-space: nowrap;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
     }
   </style>
 </head>
 <body>
-
+  <!-- 3D Heart Model -->
   <model-viewer
     id="heartViewer"
     src="https://noursalous.github.io/WebAR/realistic_human_heart.glb"
@@ -71,45 +75,62 @@
     ar-modes="webxr scene-viewer quick-look"
     camera-controls
     shadow-intensity="1"
-    interaction-prompt="auto"
-  >
-    <!-- Updated Hotspots with your precise positions -->
-    <button slot="hotspot-1" class="hotspot" data-position="-0.083912 0.2039 -0.50432" data-normal="0 1 0">
-      <span class="label">Aorta</span>
+    interaction-prompt="auto">
+
+    <!-- Hotspots -->
+    <button slot="hotspot-svc" class="hotspot"
+      data-position="-0.3205 0.16538 -0.73637"
+      data-normal="0 1 0">
+      Superior Vena Cava
     </button>
 
-    <button slot="hotspot-2" class="hotspot" data-position="0.4428 0.094358 -0.42333" data-normal="0 1 0">
-      <span class="label">Pulmonary Arteries</span>
+    <button slot="hotspot-pa" class="hotspot"
+      data-position="0.4428 0.094358 -0.42333"
+      data-normal="0 1 0">
+      Pulmonary Arteries
     </button>
 
-    <button slot="hotspot-3" class="hotspot" data-position="-0.3205 0.16538 0.-0.73637 " data-normal="0 1 0">
-      <span class="label">Superior Vena Cava</span>
+    <button slot="hotspot-aorta" class="hotspot"
+      data-position="-0.083912 0.2039 -0.50432"
+      data-normal="0 1 0">
+      Aorta
     </button>
   </model-viewer>
 
+  <!-- Control Panel -->
+  <div class="controls">
+    <button onclick="focusPart('svc')">Superior Vena Cava</button>
+    <button onclick="focusPart('pa')">Pulmonary Arteries</button>
+    <button onclick="focusPart('aorta')">Aorta</button>
+  </div>
+
   <script>
     const viewer = document.getElementById("heartViewer");
-    const hotspots = document.querySelectorAll(".hotspot");
 
-    hotspots.forEach(hotspot => {
-      hotspot.addEventListener("click", () => {
-        const label = hotspot.querySelector(".label").textContent;
-        switch(label) {
-          case "Aorta":
-            viewer.cameraOrbit = "0deg 75deg 2.2m";
-            break;
-          case "Pulmonary Arteries":
-            viewer.cameraOrbit = "60deg 75deg 2.2m";
-            break;
-          case "Superior Vena Cava":
-            viewer.cameraOrbit = "0deg 70deg 2m";
-            break;
-        }
-      });
-    });
+    // Focus function
+    function focusPart(part) {
+      let target = "";
+      let orbit = "";
+
+      switch(part) {
+        case "svc":
+          target = "-0.3205m 0.16538m -0.73637m";
+          orbit = "45deg 70deg 1.2m"; // Camera position
+          break;
+        case "pa":
+          target = "0.4428m 0.094358m -0.42333m";
+          orbit = "90deg 70deg 1.2m";
+          break;
+        case "aorta":
+          target = "-0.083912m 0.2039m -0.50432m";
+          orbit = "0deg 65deg 1.2m";
+          break;
+      }
+
+      viewer.setAttribute("camera-target", target);
+      viewer.setAttribute("camera-orbit", orbit);
+      viewer.setAttribute("field-of-view", "20deg");
+    }
   </script>
-
 </body>
 </html>
-
-

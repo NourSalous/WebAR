@@ -1,143 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Heart Model Futuristic</title>
+  <meta charset="UTF-8">
+  <title>3D Heart Model</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      padding: 0;
-      background: #0a0a0a;
-      height: 100vh;
+      background: #ffffff;
+      font-family: 'DM Sans', sans-serif;
       overflow: hidden;
-      font-family: "Orbitron", sans-serif;
     }
 
     model-viewer {
       width: 100vw;
       height: 100vh;
-      background-color: #0a0a0a;
+      background: white;
     }
 
-    /* Hotspot styling */
+    /* Hotspot buttons */
     .hotspot {
-      background: radial-gradient(circle, #ff1744, #c51162);
+      width: 14px;
+      height: 14px;
+      border: 2px solid #67130c;
       border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      border: 2px solid #fff;
+      background: white;
+      box-shadow: 0 0 10px rgba(103, 19, 12, 0.6);
       cursor: pointer;
-      position: relative;
-      box-shadow: 0 0 12px #ff1744, 0 0 20px rgba(255, 23, 68, 0.6);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .hotspot:hover {
+      transform: scale(1.3);
+      box-shadow: 0 0 18px rgba(103, 19, 12, 0.8);
     }
 
-    /* Futuristic Label */
-    .label {
-      display: none;
-      position: absolute;
-      top: -50px;
-      left: 30px;
-      padding: 8px 14px;
-      border-radius: 10px;
-      background: rgba(15, 15, 30, 0.75);
-      border: 1px solid rgba(0, 255, 255, 0.5);
-      backdrop-filter: blur(8px);
-      color: #00f7ff;
-      font-size: 15px;
+    /* Label styles */
+    .annotation {
+      position: relative;
+      background: white;
+      color: #67130c;
       font-weight: 600;
-      letter-spacing: 1px;
-      text-shadow: 0 0 6px #00f7ff, 0 0 12px rgba(0, 247, 255, 0.6);
-      box-shadow: 0 0 10px rgba(0,255,255,0.5), inset 0 0 8px rgba(0,255,255,0.3);
-      white-space: nowrap;
-      transform: scale(0.9);
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       opacity: 0;
-      transition: all 0.4s ease;
+      transform: translateY(-6px) scale(0.95);
+      transition: all 0.35s ease;
+    }
+    .hotspot:hover .annotation {
+      opacity: 1;
+      transform: translateY(-10px) scale(1);
     }
 
     /* Connector line */
-    .label::before {
+    .annotation::before {
       content: "";
       position: absolute;
-      left: -20px;
-      top: 50%;
-      width: 20px;
-      height: 2px;
-      background: linear-gradient(to right, #00f7ff, transparent);
-      box-shadow: 0 0 8px #00f7ff;
+      width: 2px;
+      height: 20px;
+      background: #67130c;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 2px;
     }
 
-    .hotspot.active .label {
-      display: block;
-      opacity: 1;
-      transform: scale(1);
+    /* Control panel */
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.9);
+      padding: 12px 18px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 10;
+    }
+    #controls button {
+      background: #67130c;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    #controls button:hover {
+      background: #8a1a12;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
   </style>
 </head>
 <body>
-
-  <!-- 3D Viewer -->
-  <model-viewer id="heartViewer"
-    src="realistic_human_heart.glb"
-    camera-controls
-    interaction-prompt="none"
-    shadow-intensity="1"
-    camera-orbit="0deg 75deg 1.5m"
-    field-of-view="45deg"
-    style="--poster-color: transparent;"
-    ar>
-    
+  <model-viewer id="heart" src="realistic_human_heart.glb" camera-controls exposure="1" shadow-intensity="1" disable-zoom background-color="#ffffff">
     <!-- Hotspots -->
-    <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
-      data-position="-0.340815m 0.711882m 0.172959m"
-      data-normal="0m 1m 0m">
-      <span class="label">Superior Vena Cava</span>
+    <button class="hotspot" slot="hotspot-svc" data-position="-0.30636m 0.60664m 0.14067m" data-normal="0m 1m 0m">
+      <div class="annotation">Superior Vena Cava</div>
     </button>
 
-    <button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
-      data-position="0.419654m 0.412853m 0.077488m"
-      data-normal="0m 1m 0m">
-      <span class="label">Pulmonary Arteries</span>
+    <button class="hotspot" slot="hotspot-pa" data-position="0.42889m 0.39424m 0.096125m" data-normal="0m 1m 0m">
+      <div class="annotation">Pulmonary Arteries</div>
     </button>
 
-    <button id="hotspot-aorta" class="hotspot" slot="hotspot-aorta"
-      data-position="0.101478m 0.622114m -0.123833m"
-      data-normal="0m 1m 0m">
-      <span class="label">Aorta</span>
+    <button class="hotspot" slot="hotspot-aorta" data-position="0.007647m 0.5969m 0.0093m" data-normal="0m 1m 0m">
+      <div class="annotation">Aorta</div>
     </button>
   </model-viewer>
 
+  <!-- Controls -->
+  <div id="controls">
+    <button id="btn-svc">Focus Superior Vena Cava</button>
+    <button id="btn-pa">Focus Pulmonary Arteries</button>
+    <button id="btn-aorta">Focus Aorta</button>
+  </div>
+
   <script>
-    const viewer = document.querySelector("#heartViewer");
-    const hotspots = document.querySelectorAll(".hotspot");
+    const viewer = document.querySelector("#heart");
 
-    function focusOnPart(hotspotId, orbit, target) {
-      // Reset all labels
-      hotspots.forEach(h => h.classList.remove("active"));
-
-      // Activate clicked hotspot
-      const hotspot = document.getElementById(hotspotId);
-      hotspot.classList.add("active");
-
-      // Animate camera focus
-      viewer.setAttribute('camera-orbit', orbit);
-      viewer.setAttribute('camera-target', target);
+    function focusOnPart(slot, orbit, target) {
+      viewer.setAttribute("camera-orbit", orbit);
+      viewer.setAttribute("camera-target", target);
+      viewer.setAttribute("field-of-view", "20deg");
     }
 
-    // Hotspot click actions
-    document.querySelector("#hotspot-svc").addEventListener("click", () => {
-      focusOnPart("hotspot-svc", "-40deg 65deg 0.6m", "-0.340815m 0.711882m 0.172959m");
+    document.querySelector("#btn-svc").addEventListener("click", () => {
+      focusOnPart("hotspot-svc", "-40deg 65deg 0.6m", "-0.30636m 0.60664m 0.14067m");
     });
 
-    document.querySelector("#hotspot-pa").addEventListener("click", () => {
-      focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m");
+    document.querySelector("#btn-pa").addEventListener("click", () => {
+      focusOnPart("hotspot-pa", "180deg 70deg 2m", "0.42889m 0.39424m 0.096125m");
     });
 
-    document.querySelector("#hotspot-aorta").addEventListener("click", () => {
-      focusOnPart("hotspot-aorta", "-10deg 40deg 0.80m", "0.01m 0.60m 0.03m");
+    document.querySelector("#btn-aorta").addEventListener("click", () => {
+      focusOnPart("hotspot-aorta", "0deg 75deg 1.9m", "0.007647m 0.5969m 0.0093m");
     });
   </script>
-
 </body>
 </html>

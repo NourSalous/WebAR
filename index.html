@@ -23,58 +23,37 @@
 
     /* Hotspot styling */
     .hotspot {
-      background: rgba(255, 0, 0, 0.9);
+      background: #e63946;
       border-radius: 50%;
       width: 18px;
       height: 18px;
       border: 2px solid white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      cursor: pointer;
+      position: relative;
     }
 
     .label {
       display: none;
-      background: rgba(0,0,0,0.7);
+      position: absolute;
+      top: -35px;
+      left: 25px;
+      background: rgba(0,0,0,0.8);
       color: white;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
       font-size: 14px;
-      margin-left: 8px;
       white-space: nowrap;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      animation: fadeIn 0.3s ease-in-out;
     }
 
     .hotspot.active .label {
-      display: inline-block;
+      display: block;
     }
 
-    /* Controls */
-    .controls {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 12px;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 10px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      z-index: 1000; /* make sure it's above the model */
-    }
-    .controls button {
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      background: #e63946;
-      color: white;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-    .controls button:hover {
-      background: #ff4d5e;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -89,7 +68,6 @@
     camera-orbit="0deg 75deg 1.5m"
     field-of-view="45deg"
     style="--poster-color: transparent;"
-    animation-name="none"
     ar>
     
     <!-- Hotspots -->
@@ -112,63 +90,36 @@
     </button>
   </model-viewer>
 
-  <!-- Controls -->
-  <div class="controls">
-    <button id="btn-svc">Superior Vena Cava</button>
-    <button id="btn-pa">Pulmonary Arteries</button>
-    <button id="btn-aorta">Aorta</button>
-  </div>
-
   <script>
     const viewer = document.querySelector("#heartViewer");
     const hotspots = document.querySelectorAll(".hotspot");
 
     function focusOnPart(hotspotId, orbit, target) {
-      // Reset labels
+      // Reset all labels
       hotspots.forEach(h => h.classList.remove("active"));
 
-      // Activate selected hotspot
+      // Activate clicked hotspot
       const hotspot = document.getElementById(hotspotId);
       hotspot.classList.add("active");
 
-      // Correctly set camera orbit and target
+      // Animate camera focus
       viewer.setAttribute('camera-orbit', orbit);
       viewer.setAttribute('camera-target', target);
     }
 
-    // Button actions
-   document.querySelector("#btn-svc").addEventListener("click", () => {
+    // Hotspot click actions
+    document.querySelector("#hotspot-svc").addEventListener("click", () => {
       focusOnPart("hotspot-svc", "-40deg 65deg 0.6m", "-0.340815m 0.711882m 0.172959m");
     });
-    
-    document.querySelector("#btn-pa").addEventListener("click", () => {
+
+    document.querySelector("#hotspot-pa").addEventListener("click", () => {
       focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m");
-});
-    
-   document.querySelector("#btn-aorta").addEventListener("click", () => {
-     focusOnPart("hotspot-aorta", "-10deg 40deg 0.80m", "0.01m 0.60m 0.03m");
-});
-    
+    });
+
+    document.querySelector("#hotspot-aorta").addEventListener("click", () => {
+      focusOnPart("hotspot-aorta", "-10deg 40deg 0.80m", "0.01m 0.60m 0.03m");
+    });
   </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

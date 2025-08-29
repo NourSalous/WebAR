@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>3D Heart Model</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart Anatomy Model</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: #fff; /* White background */
+      background: #fff;
       height: 100vh;
       overflow: hidden;
       font-family: "DM Sans", sans-serif;
@@ -24,8 +25,8 @@
     .hotspot {
       background: radial-gradient(circle, #67130c, #400804);
       border-radius: 50%;
-      width: 28px;   /* Bigger for easier tap */
-      height: 28px;
+      width: 28px;   /* Bigger size */
+      height: 28px;  /* Bigger size */
       border: 2px solid #fff;
       cursor: pointer;
       position: relative;
@@ -35,7 +36,7 @@
       justify-content: center;
     }
 
-    /* Label styling */
+    /* Futuristic Label */
     .label {
       display: none;
       position: absolute;
@@ -54,13 +55,14 @@
       opacity: 0;
       transition: all 0.4s ease;
       box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+      animation: floatLabel 3s ease-in-out infinite; /* floating effect */
     }
 
-    /* Connector line */
+    /* Connector line from hotspot to label */
     .label::before {
       content: "";
       position: absolute;
-      left: -25px; /* connects from hotspot */
+      left: -25px;
       top: 50%;
       width: 25px;
       height: 2px;
@@ -68,93 +70,106 @@
       box-shadow: 0 0 6px rgba(103,19,12,0.5);
     }
 
-    /* Floating animation */
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-      100% { transform: translateY(0); }
-    }
-
+    /* Active label state */
     .hotspot.active .label {
       display: block;
       opacity: 1;
       transform: translateY(0) scale(1);
-      animation: float 3s ease-in-out infinite;
     }
 
-    /* Control buttons */
-    #controls {
+    /* Floating animation (subtle) */
+    @keyframes floatLabel {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-3px) scale(1); }
+    }
+
+    /* Buttons */
+    .controls {
       position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 20px;
+      left: 20px;
       display: flex;
-      gap: 12px;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
     }
 
-    #controls button {
+    .controls button {
+      padding: 12px 20px;
       background: #67130c;
       color: #fff;
       border: none;
-      padding: 12px 18px;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      font-size: 14px;
+      font-family: "DM Sans", sans-serif;
       font-weight: 600;
-      box-shadow: 0 4px 12px rgba(103,19,12,0.4);
-      transition: transform 0.2s ease, background 0.3s ease;
+      font-size: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
     }
 
-    #controls button:hover {
+    .controls button:hover {
       background: #400804;
-      transform: translateY(-2px);
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
-  <model-viewer id="model" src="heart.glb" camera-controls auto-rotate ar>
+  <!-- Model -->
+  <model-viewer id="model" 
+    src="realistic_human_heart.glb" 
+    camera-controls 
+    interaction-prompt="none"
+    shadow-intensity="1"
+    exposure="1"
+    auto-rotate>
+    
     <!-- Hotspots -->
-    <button class="hotspot" slot="hotspot-svc" data-position="0.1m 0.5m 0.1m" data-normal="0m 1m 0m">
+    <button slot="hotspot-svc" class="hotspot" data-position="0m 0.6m 0.1m">
       <span class="label">Superior Vena Cava</span>
     </button>
 
-    <button class="hotspot" slot="hotspot-pa" data-position="0.3m 0.4m 0.1m" data-normal="0m 1m 0m">
-      <span class="label">Pulmonary Arteries</span>
+    <button slot="hotspot-pa" class="hotspot" data-position="0.42m 0.39m 0.09m">
+      <span class="label">Pulmonary Artery</span>
     </button>
 
-    <button class="hotspot" slot="hotspot-aorta" data-position="0m 0.6m 0m" data-normal="0m 1m 0m">
+    <button slot="hotspot-aorta" class="hotspot" data-position="0.00m 0.59m 0.00m">
       <span class="label">Aorta</span>
     </button>
   </model-viewer>
 
-  <!-- Control buttons -->
-  <div id="controls">
-    <button id="btn-svc">Superior Vena Cava</button>
-    <button id="btn-pa">Pulmonary Arteries</button>
-    <button id="btn-aorta">Aorta</button>
+  <!-- Controls -->
+  <div class="controls">
+    <button id="btn-svc">View Superior Vena Cava</button>
+    <button id="btn-pa">View Pulmonary Artery</button>
+    <button id="btn-aorta">View Aorta</button>
   </div>
 
   <script>
-    const modelViewer = document.querySelector("#model");
+    const modelViewer = document.getElementById("model");
 
-    function focusOnPart(slot, orbit, target) {
+    function focusOnPart(hotspot, orbit, target) {
       modelViewer.cameraOrbit = orbit;
       modelViewer.cameraTarget = target;
 
+      // Reset all hotspots
       document.querySelectorAll(".hotspot").forEach(h => h.classList.remove("active"));
-      document.querySelector(`[slot="${slot}"]`).classList.add("active");
+      // Activate selected
+      const activeHotspot = document.querySelector(`[slot="${hotspot}"]`);
+      if (activeHotspot) activeHotspot.classList.add("active");
     }
 
+    // Button actions
     document.querySelector("#btn-svc").addEventListener("click", () => {
-      focusOnPart("hotspot-svc", "-40deg 65deg 0.6m", "-0.30636m 0.60664m 0.14067m");
+      focusOnPart("hotspot-svc", "-40deg 65deg 2.2m", "-0.30636m 0.60664m 0.14067m");
     });
 
     document.querySelector("#btn-pa").addEventListener("click", () => {
-      focusOnPart("hotspot-pa", "200deg 65deg 2.2m", "0.42889m 0.39424m 0.096125m");
+      focusOnPart("hotspot-pa", "90deg 70deg 2.6m", "0.42889m 0.39424m 0.096125m");
     });
 
     document.querySelector("#btn-aorta").addEventListener("click", () => {
-      focusOnPart("hotspot-aorta", "0deg 75deg 2.2m", "0.007647m 0.5969m 0.0093m");
+      focusOnPart("hotspot-aorta", "0deg 80deg 2.6m", "0.007647m 0.5969m 0.0093m");
     });
   </script>
 </body>

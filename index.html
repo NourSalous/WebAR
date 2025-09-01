@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Heart Model Clean Labels</title>
+  <title>3D Heart Model Smooth Zoom</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     body {
@@ -19,9 +19,6 @@
       width: 100vw;
       height: 100vh;
       background-color: #fff;
-
-      /* smoother & slower zoom */
-      --model-viewer-scroll-sensitivity: 0.2;
     }
 
     .hotspot {
@@ -81,7 +78,7 @@
     camera-controls
     interaction-prompt="none"
     shadow-intensity="1"
-    camera-orbit="0deg 75deg 4m"
+    camera-orbit="0deg 75deg 2m"
     min-camera-orbit="auto auto 1m"
     max-camera-orbit="auto auto 9999m"
     min-field-of-view="20deg"
@@ -112,6 +109,16 @@
     const viewer = document.querySelector("#heartViewer");
     const hotspots = document.querySelectorAll(".hotspot");
 
+    // --- Smooth Zoom Handler ---
+    viewer.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const orbit = viewer.getCameraOrbit();
+      const change = event.deltaY * -0.0005; // smaller factor = smoother zoom
+      orbit.radius = Math.max(1, orbit.radius + change); // don't zoom inside model
+      viewer.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
+    }, { passive: false });
+
+    // --- Hotspot focus handler ---
     function focusOnPart(hotspotId, orbit, target) {
       hotspots.forEach(h => h.classList.remove("active"));
       const hotspot = document.getElementById(hotspotId);

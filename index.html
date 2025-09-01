@@ -81,22 +81,23 @@
 </head>
 <body>
   
-  <model-viewer 
-  id="heartViewer"
-  src="realistic_human_heart.glb"
-  camera-controls
-  interaction-prompt="auto"
-  shadow-intensity="1"
-  camera-orbit="0deg 75deg 5m"
-  min-camera-orbit="auto 15deg 1m"
-  max-camera-orbit="auto 90deg 5m"
-  field-of-view="45deg"
-  ar=""
-  ar-modes="webxr scene-viewer quick-look"
-  ar-scale="auto"
-    >
-
-
+  
+    
+    <model-viewer
+      id="heartViewer"
+      src="realistic_human_heart.glb"
+      ios-src="https://noursalous.github.io/WebAR/realistic_human_heart.usdz"
+      alt="3D Heart Model"
+      ar
+      ar-modes="scene-viewer webxr quick-look"
+      ar-scale="fixed"
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      shadow-intensity="1"
+      interaction-prompt="auto"
+      auto-rotate
+      quick-look-browsers="safari chrome"
+      >
    
 
   
@@ -147,6 +148,7 @@
   </script>
 </body>
 </html>
+
 
 
 

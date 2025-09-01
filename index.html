@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>3D Heart Model Clean Labels</title>
+<title>3D Heart Model Smooth Hotspots</title>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <style>
-/* ===== BASE STYLES ===== */
 * { box-sizing: border-box; }
 
 body {
@@ -18,7 +17,6 @@ body {
   font-family: "DM Sans", sans-serif;
 }
 
-/* ===== MODEL VIEWER ===== */
 model-viewer {
   width: 100vw;
   height: 100vh;
@@ -27,7 +25,6 @@ model-viewer {
   --poster-color: transparent;
 }
 
-/* ===== HOTSPOT STYLES ===== */
 .hotspot {
   background: #67130c;
   border-radius: 50%;
@@ -36,13 +33,12 @@ model-viewer {
   border: 2px solid #fff;
   cursor: pointer;
   position: relative;
-  box-shadow: 0 0 6px rgba(103, 19, 12, 0.4);
+  box-shadow: 0 0 6px rgba(103,19,12,0.4);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ===== LABEL STYLES ===== */
 .label {
   display: none;
   position: absolute;
@@ -59,7 +55,7 @@ model-viewer {
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .label::before {
@@ -73,7 +69,6 @@ model-viewer {
   background: #67130c;
 }
 
-/* ===== ACTIVE HOTSPOT LABEL ===== */
 .hotspot.active .label {
   display: block;
   opacity: 1;
@@ -82,7 +77,6 @@ model-viewer {
 </head>
 <body>
 
-<!-- ===== MODEL VIEWER ===== -->
 <model-viewer 
   id="heartViewer"
   src="realistic_human_heart.glb"
@@ -95,45 +89,75 @@ model-viewer {
   field-of-view="45deg"
   camera-target="0m 0m 0m"
   ar
->
-  <!-- ===== HOTSPOTS ===== -->
-  <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
-    data-position="-0.340815m 0.711882m 0.172959m"
-    data-normal="0m 1m 0m">
-    <span class="label">Superior Vena Cava</span>
-  </button>
+></model-viewer>
 
-  <button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
-    data-position="0.419654m 0.412853m 0.077488m"
-    data-normal="0m 1m 0m">
-    <span class="label">Pulmonary Arteries</span>
-  </button>
+<!-- Hotspots -->
+<button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
+  data-position="-0.340815m 0.711882m 0.172959m"
+  data-normal="0m 1m 0m">
+  <span class="label">Superior Vena Cava</span>
+</button>
 
-  <button id="hotspot-aorta" class="hotspot" slot="hotspot-aorta"
-    data-position="0.101478m 0.622114m -0.123833m"
-    data-normal="0m 1m 0m">
-    <span class="label">Aorta</span>
-  </button>
-</model-viewer>
+<button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
+  data-position="0.419654m 0.412853m 0.077488m"
+  data-normal="0m 1m 0m">
+  <span class="label">Pulmonary Arteries</span>
+</button>
+
+<button id="hotspot-aorta" class="hotspot" slot="hotspot-aorta"
+  data-position="0.101478m 0.622114m -0.123833m"
+  data-normal="0m 1m 0m">
+  <span class="label">Aorta</span>
+</button>
 
 <script>
-// ===== CONSTANTS =====
 const viewer = document.querySelector("#heartViewer");
 const hotspots = document.querySelectorAll(".hotspot");
 
-// ===== FUNCTION TO FOCUS ON HOTSPOT =====
-function focusOnPart(hotspotId, orbit, target) {
-  // Remove active state from all hotspots
+// ===== HELPER: Convert deg/m to numbers for interpolation =====
+function parseOrbit(orbitStr) {
+  const parts = orbitStr.split(' ');
+  return {
+    theta: parseFloat(parts[0]),
+    phi: parseFloat(parts[1]),
+    radius: parseFloat(parts[2])
+  };
+}
+
+function orbitToString(orbit) {
+  return `${orbit.theta}deg ${orbit.phi}deg ${orbit.radius}m`;
+}
+
+// ===== SMOOTH CAMERA ANIMATION =====
+function animateCamera(targetOrbitStr, duration = 1000) {
+  const startOrbit = parseOrbit(viewer.cameraOrbit);
+  const endOrbit = parseOrbit(targetOrbitStr);
+  const startTime = performance.now();
+
+  function animate(time) {
+    const t = Math.min((time - startTime)/duration, 1); // 0 → 1
+    const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t; // smooth ease in/out
+
+    const currentOrbit = {
+      theta: startOrbit.theta + (endOrbit.theta - startOrbit.theta) * ease,
+      phi: startOrbit.phi + (endOrbit.phi - startOrbit.phi) * ease,
+      radius: startOrbit.radius + (endOrbit.radius - startOrbit.radius) * ease
+    };
+
+    viewer.cameraOrbit = orbitToString(currentOrbit);
+
+    if (t < 1) requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+// ===== FOCUS FUNCTION =====
+function focusOnPart(hotspotId, orbitStr, target) {
   hotspots.forEach(h => h.classList.remove("active"));
-
-  // Activate the clicked hotspot
-  const hotspot = document.getElementById(hotspotId);
-  hotspot.classList.add("active");
-
-  // Smoothly animate camera to hotspot
-  viewer.cameraOrbit = orbit;    // target orbit
-  viewer.cameraTarget = target;  // target point
-  viewer.jumpCameraToGoal();     // smooth transition
+  document.getElementById(hotspotId).classList.add("active");
+  viewer.cameraTarget = target; // set target immediately
+  animateCamera(orbitStr, 1200); // smooth orbit over 1.2s
 }
 
 // ===== HOTSPOT CLICK EVENTS =====

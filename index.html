@@ -41,6 +41,7 @@
     justify-content: center;
   }
 
+  /* ===== LABEL STYLES ===== */
   .label {
     display: none;
     position: absolute;
@@ -59,7 +60,6 @@
     transition: opacity 0.3s ease;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
-
   .label::before {
     content: "";
     position: absolute;
@@ -70,13 +70,12 @@
     height: 1.5px;
     background: #67130c;
   }
-
   .hotspot.active .label {
     display: block;
     opacity: 1;
   }
 
-  /* ===== STYLE THE AR BUTTON GENERATED AUTOMATICALLY ===== */
+  /* ===== AR BUTTON ===== */
   model-viewer::part(ar-button) {
     bottom: 20px;
     right: 20px;
@@ -95,20 +94,18 @@
 <model-viewer
   id="heartViewer"
   src="realistic_human_heart.glb"
+  ios-src="realistic_human_heart.usdz"
   camera-controls
   interaction-prompt="auto"
   shadow-intensity="1"
-  camera-orbit="0deg 75deg 3.5m"
-  min-camera-orbit="auto 15deg 1m"
-  max-camera-orbit="auto 90deg 5m"
-  field-of-view="45deg"
   ar
-  ar-modes="scene-viewer webxr quick-look"
-  xr-environment
-  auto-rotate
-  auto-rotate-delay="1000"
-  auto-rotate-speed="0.3"
+  ar-modes="scene-viewer quick-look"
 >
+</model-viewer>
+
+  <!-- AR Button -->
+  <button slot="ar-button">View in AR</button>
+
   <!-- Hotspots -->
   <button id="hotspot-svc" class="hotspot" slot="hotspot-svc" data-position="-0.340815m 0.711882m 0.172959m" data-normal="0m 1m 0m">
     <span class="label">Superior Vena Cava</span>
@@ -125,15 +122,15 @@
 const viewer = document.querySelector("#heartViewer");
 const hotspots = document.querySelectorAll(".hotspot");
 
-// Smooth camera focus
+// Smooth camera focus function
 function focusOnPart(hotspotId, orbit, target) {
   hotspots.forEach(h => h.classList.remove("active"));
   const hotspot = document.getElementById(hotspotId);
   hotspot.classList.add("active");
 
-  // Smoothly animate rotation
+  // Animate rotation smoothly
   viewer.cameraOrbit = viewer.cameraOrbit; // current orbit
-  viewer.animateCameraOrbit(orbit, { duration: 1000 });
+  viewer.animateCameraOrbit(orbit, { duration: 1000 }); 
   viewer.setAttribute('camera-target', target);
 }
 

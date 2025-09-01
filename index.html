@@ -1,76 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Heart Smooth Zoom & Rotation</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #fff;
-      height: 100vh;
-      overflow: hidden;
-      font-family: "DM Sans", sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Heart Professional Viewer</title>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "DM Sans", sans-serif;
+  }
 
-    model-viewer {
-      width: 100vw;
-      height: 100vh;
-      background-color: #fff;
-      cursor: grab;
-    }
+  model-viewer {
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+    cursor: grab;
+  }
 
-    .hotspot {
-      background: #67130c;
-      border-radius: 50%;
-      width: 33px;
-      height: 33px;
-      border: 2px solid #fff;
-      cursor: pointer;
-      position: relative;
-      box-shadow: 0 0 6px rgba(103,19,12,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  .hotspot {
+    background: #67130c;
+    border-radius: 50%;
+    width: 33px;
+    height: 33px;
+    border: 2px solid #fff;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 0 6px rgba(103,19,12,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .label {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 40px;
-      transform: translateY(-50%);
-      padding: 8px 14px;
-      border-radius: 6px;
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      color: #67130c;
-      font-size: 15px;
-      font-weight: 600;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+  .label {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    transform: translateY(-50%);
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #67130c;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
 
-    .label::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: -20px;
-      transform: translateY(-50%);
-      width: 20px;
-      height: 1.5px;
-      background: #67130c;
-    }
+  .label::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 1.5px;
+    background: #67130c;
+  }
 
-    .hotspot.active .label {
-      display: block;
-      opacity: 1;
-    }
-  </style>
+  .hotspot.active .label {
+    display: block;
+    opacity: 1;
+  }
+</style>
 </head>
 <body>
 
@@ -111,20 +111,20 @@
 const viewer = document.querySelector("#heartViewer");
 const hotspots = document.querySelectorAll(".hotspot");
 
-// --- Smooth zoom variables ---
+// Smooth & professional zoom
 let targetRadius = 2;
 let currentRadius = 2;
 const minRadius = 1;
 const maxRadius = 9999;
-const zoomEasing = 0.05;
-const scrollFactor = 0.003;
+const zoomEasing = 0.08; // smoother, slightly faster glide
+const scrollFactor = 0.002; // very gentle scroll zoom
 
-// --- Smooth rotation variables ---
+// Smooth rotation with inertia
 let targetTheta = 0;
-let targetPhi = Math.PI / 2.4; // ~75deg
+let targetPhi = Math.PI / 2.4; // 75deg
 let currentTheta = targetTheta;
 let currentPhi = targetPhi;
-const rotationEasing = 0.05;
+const rotationEasing = 0.08;
 let isDragging = false;
 let lastX = 0;
 let lastY = 0;
@@ -152,8 +152,8 @@ viewer.addEventListener("pointerup", () => {
 
 viewer.addEventListener("pointermove", (event) => {
   if (!isDragging) return;
-  const dx = (event.clientX - lastX) * 0.005; // rotation speed
-  const dy = (event.clientY - lastY) * 0.005;
+  const dx = (event.clientX - lastX) * 0.004; // slightly slower rotation
+  const dy = (event.clientY - lastY) * 0.004;
   targetTheta -= dx;
   targetPhi -= dy;
   if(targetPhi < 0.1) targetPhi = 0.1;
@@ -162,7 +162,7 @@ viewer.addEventListener("pointermove", (event) => {
   lastY = event.clientY;
 });
 
-// --- Animation loop for smooth rotation & zoom ---
+// --- Animate loop ---
 function animate() {
   currentRadius += (targetRadius - currentRadius) * zoomEasing;
   currentTheta += (targetTheta - currentTheta) * rotationEasing;
@@ -178,7 +178,6 @@ function focusOnPart(hotspotId, orbit, target, zoom) {
   const hotspot = document.getElementById(hotspotId);
   hotspot.classList.add("active");
 
-  // Extract theta, phi, radius from orbit string
   const match = orbit.match(/(-?\d+)deg (-?\d+)deg ([\d.]+)m/);
   if(match){
     const degToRad = Math.PI / 180;
@@ -186,7 +185,6 @@ function focusOnPart(hotspotId, orbit, target, zoom) {
     targetPhi = parseFloat(match[2]) * degToRad;
     targetRadius = zoom;
   }
-
   viewer.setAttribute('camera-target', target);
 }
 

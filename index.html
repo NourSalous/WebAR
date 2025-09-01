@@ -40,12 +40,12 @@
     .hotspot {
       background: #67130c;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      border: 3px solid #fff;
+      width: 33px;
+      height: 33px;
+      border: 2px solid #fff;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 2px 12px rgba(103, 19, 12, 0.5);
+      box-shadow: 0 0 6px rgba(103, 19, 12, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -68,31 +68,29 @@
       display: none;
       position: absolute;
       top: 50%;
-      left: 50px;
+      left: 40px;
       transform: translateY(-50%);
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 8px 14px;
+      border-radius: 6px;
       background: #fff;
-      border: 2px solid #67130c;
+      border: 1px solid #e0e0e0;
       color: #67130c;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       white-space: nowrap;
       opacity: 0;
       transition: opacity 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      z-index: 10;
-      max-width: calc(100vw - 80px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
     
     .label::before {
       content: "";
       position: absolute;
       top: 50%;
-      left: -24px;
+      left: -20px;
       transform: translateY(-50%);
-      width: 24px;
-      height: 2px;
+      width: 20px;
+      height: 1.5px;
       background: #67130c;
     }
     
@@ -185,8 +183,6 @@
     ar
     ar-modes="webxr scene-viewer quick-look"
     ios-src="realistic_human_heart.usdz"
-    auto-rotate
-    auto-rotate-delay="3000"
   >
     <!-- Hotspots -->
     <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
@@ -241,13 +237,6 @@
       // Update camera view with smooth transition
       viewer.setAttribute('camera-orbit', orbit);
       viewer.setAttribute('camera-target', target);
-      
-      // Auto-hide label after 3 seconds on mobile
-      if (isMobile) {
-        setTimeout(() => {
-          hotspot.classList.remove("active");
-        }, 3000);
-      }
     }
     
     // ===== EVENT LISTENERS =====

@@ -6,70 +6,12 @@
 <title>Professional 3D Heart Viewer</title>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <style>
-  body {
-    margin: 0;
-    padding: 0;
-    background: #fff;
-    height: 100vh;
-    overflow: hidden;
-    font-family: "DM Sans", sans-serif;
-  }
-
-  model-viewer {
-    width: 100vw;
-    height: 100vh;
-    background-color: #fff;
-    cursor: grab;
-  }
-
-  .hotspot {
-    background: #67130c;
-    border-radius: 50%;
-    width: 33px;
-    height: 33px;
-    border: 2px solid #fff;
-    cursor: pointer;
-    position: relative;
-    box-shadow: 0 0 6px rgba(103,19,12,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .label {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 40px;
-    transform: translateY(-50%);
-    padding: 8px 14px;
-    border-radius: 6px;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    color: #67130c;
-    font-size: 15px;
-    font-weight: 600;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-
-  .label::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: -20px;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 1.5px;
-    background: #67130c;
-  }
-
-  .hotspot.active .label {
-    display: block;
-    opacity: 1;
-  }
+body {margin:0; padding:0; height:100vh; overflow:hidden; font-family:"DM Sans",sans-serif;}
+model-viewer {width:100vw; height:100vh; cursor:grab; background:#fff;}
+.hotspot {background:#67130c;border-radius:50%;width:33px;height:33px;border:2px solid #fff;cursor:pointer;position:relative;box-shadow:0 0 6px rgba(103,19,12,0.4);display:flex;align-items:center;justify-content:center;}
+.label {display:none;position:absolute;top:50%;left:40px;transform:translateY(-50%);padding:8px 14px;border-radius:6px;background:#fff;border:1px solid #e0e0e0;color:#67130c;font-size:15px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity 0.3s ease;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.label::before {content:"";position:absolute;top:50%;left:-20px;transform:translateY(-50%);width:20px;height:1.5px;background:#67130c;}
+.hotspot.active .label {display:block; opacity:1;}
 </style>
 </head>
 <body>
@@ -79,9 +21,9 @@
   camera-controls
   interaction-prompt="none"
   shadow-intensity="1"
-  camera-orbit="0deg 75deg 1.8m"
-  min-camera-orbit="auto auto 1m"
-  max-camera-orbit="auto auto 9999m"
+  camera-orbit="auto 75deg 1.8m"
+  min-camera-orbit="auto 15deg 1m"
+  max-camera-orbit="auto 165deg 9999m"
   min-field-of-view="20deg"
   max-field-of-view="180deg"
   style="--poster-color: transparent;"
@@ -113,91 +55,64 @@ const viewer = document.querySelector("#heartViewer");
 const hotspots = document.querySelectorAll(".hotspot");
 
 // --- Camera & zoom ---
-let targetRadius = 1.8; // start with professional distance
+let targetRadius = 1.8; // initial distance
 let currentRadius = targetRadius;
 const minRadius = 1;
 const maxRadius = 9999;
 const zoomEasing = 0.08;
 const scrollFactor = 0.002;
 
-// --- Rotation with inertia ---
-let targetTheta = 0;
-let targetPhi = 75 * Math.PI / 180; // initial phi
-let currentTheta = targetTheta;
+// --- Rotation (phi) with inertia ---
+let targetPhi = 75 * Math.PI / 180; // initial phi in rad
 let currentPhi = targetPhi;
 const rotationEasing = 0.08;
 let isDragging = false;
-let lastX = 0;
 let lastY = 0;
 
 // --- Zooming ---
-viewer.addEventListener("wheel", (e) => {
+viewer.addEventListener("wheel", e=>{
   e.preventDefault();
   targetRadius += e.deltaY * scrollFactor;
-  if (targetRadius < minRadius) targetRadius = minRadius;
-  if (targetRadius > maxRadius) targetRadius = maxRadius;
-}, { passive: false });
+  targetRadius = Math.max(minRadius, Math.min(maxRadius, targetRadius));
+}, {passive:false});
 
 // --- Drag rotation ---
-viewer.addEventListener("pointerdown", (e) => {
+viewer.addEventListener("pointerdown", e=>{
   isDragging = true;
-  lastX = e.clientX;
   lastY = e.clientY;
-  viewer.style.cursor = "grabbing";
+  viewer.style.cursor="grabbing";
 });
-
-viewer.addEventListener("pointerup", () => {
-  isDragging = false;
-  viewer.style.cursor = "grab";
-});
-
-viewer.addEventListener("pointermove", (e) => {
-  if (!isDragging) return;
-  const dx = (e.clientX - lastX) * 0.004;
-  const dy = (e.clientY - lastY) * 0.004;
-  targetTheta -= dx;
+viewer.addEventListener("pointerup", ()=>{isDragging=false; viewer.style.cursor="grab";});
+viewer.addEventListener("pointermove", e=>{
+  if(!isDragging) return;
+  const dy = (e.clientY - lastY)*0.004;
   targetPhi -= dy;
-  targetPhi = Math.min(Math.PI - 0.1, Math.max(0.1, targetPhi));
-  lastX = e.clientX;
+  targetPhi = Math.min(Math.PI-0.1, Math.max(0.1,targetPhi));
   lastY = e.clientY;
 });
 
-// --- Animate loop ---
-function animate() {
-  currentRadius += (targetRadius - currentRadius) * zoomEasing;
-  currentTheta += (targetTheta - currentTheta) * rotationEasing;
-  currentPhi += (targetPhi - currentPhi) * rotationEasing;
-  viewer.cameraOrbit = `${currentTheta}rad ${currentPhi}rad ${currentRadius}m`;
+// --- Animate ---
+function animate(){
+  currentRadius += (targetRadius-currentRadius)*zoomEasing;
+  currentPhi += (targetPhi-currentPhi)*rotationEasing;
+  viewer.cameraOrbit = `auto ${currentPhi}rad ${currentRadius}m`;
   requestAnimationFrame(animate);
 }
 animate();
 
 // --- Hotspot focus ---
-function focusOnPart(hotspotId, orbit, target, zoom) {
-  hotspots.forEach(h => h.classList.remove("active"));
-  const hotspot = document.getElementById(hotspotId);
+function focusOnPart(hotspotId,target,zoom){
+  hotspots.forEach(h=>h.classList.remove("active"));
+  const hotspot=document.getElementById(hotspotId);
   hotspot.classList.add("active");
-
-  const match = orbit.match(/(-?\d+)deg (-?\d+)deg ([\d.]+)m/);
-  if (match){
-    const degToRad = Math.PI / 180;
-    targetTheta = parseFloat(match[1]) * degToRad;
-    targetPhi = parseFloat(match[2]) * degToRad;
-    targetRadius = zoom;
-  }
-  viewer.setAttribute('camera-target', target);
+  targetRadius = zoom;
+  viewer.setAttribute('camera-target',target);
 }
 
-// --- Hotspot click events ---
-document.querySelector("#hotspot-svc").addEventListener("click", () => {
-  focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m", 1.2);
-});
-document.querySelector("#hotspot-pa").addEventListener("click", () => {
-  focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m", 2.0);
-});
-document.querySelector("#hotspot-aorta").addEventListener("click", () => {
-  focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m", 1.5);
-});
+// --- Hotspot events ---
+document.querySelector("#hotspot-svc").addEventListener("click",()=>focusOnPart("hotspot-svc","-0.340815m 0.711882m 0.172959m",1.2));
+document.querySelector("#hotspot-pa").addEventListener("click",()=>focusOnPart("hotspot-pa","0.05m 0.1m 0.03m",2.0));
+document.querySelector("#hotspot-aorta").addEventListener("click",()=>focusOnPart("hotspot-aorta","0.01m 0.60m 0.03m",1.5));
 </script>
 
 </body>

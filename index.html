@@ -9,7 +9,7 @@
     body {
       margin: 0;
       padding: 0;
-      background: #fff; /* White background */
+      background: #fff;
       height: 100vh;
       overflow: hidden;
       font-family: "DM Sans", sans-serif;
@@ -21,11 +21,10 @@
       background-color: #fff;
     }
 
-    /* Hotspot styling */
     .hotspot {
       background: #67130c;
       border-radius: 50%;
-      width: 33px; /* bigger for easy click */
+      width: 33px;
       height: 33px;
       border: 2px solid #fff;
       cursor: pointer;
@@ -36,7 +35,6 @@
       justify-content: center;
     }
 
-    /* Label styling */
     .label {
       display: none;
       position: absolute;
@@ -56,7 +54,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Connector line */
     .label::before {
       content: "";
       position: absolute;
@@ -68,7 +65,6 @@
       background: #67130c;
     }
 
-    /* Active label */
     .hotspot.active .label {
       display: block;
       opacity: 1;
@@ -77,21 +73,19 @@
 </head>
 <body>
 
-  <!-- 3D Viewer -->
   <model-viewer id="heartViewer"
     src="realistic_human_heart.glb"
     camera-controls
     interaction-prompt="none"
     shadow-intensity="1"
-    camera-orbit="0deg 75deg 3m"       <!-- farther back so model looks smaller -->
-    min-camera-orbit="auto auto 0.2m"  <!-- zoom in very close -->
-    max-camera-orbit="auto auto 10m"   <!-- zoom out very far -->
+    camera-orbit="0deg 75deg 4m"
+    min-camera-orbit="auto auto 0.1m"
+    max-camera-orbit="auto auto 1000m"
     min-field-of-view="10deg"
-    max-field-of-view="120deg"
+    max-field-of-view="180deg"
     style="--poster-color: transparent;"
     ar>
     
-    <!-- Hotspots -->
     <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
       data-position="-0.340815m 0.711882m 0.172959m"
       data-normal="0m 1m 0m">
@@ -116,19 +110,13 @@
     const hotspots = document.querySelectorAll(".hotspot");
 
     function focusOnPart(hotspotId, orbit, target) {
-      // Reset all labels
       hotspots.forEach(h => h.classList.remove("active"));
-
-      // Activate clicked hotspot
       const hotspot = document.getElementById(hotspotId);
       hotspot.classList.add("active");
-
-      // Animate camera focus
       viewer.setAttribute('camera-orbit', orbit);
       viewer.setAttribute('camera-target', target);
     }
 
-    // Hotspot click actions
     document.querySelector("#hotspot-svc").addEventListener("click", () => {
       focusOnPart("hotspot-svc", "-40deg 65deg 0.6m", "-0.340815m 0.711882m 0.172959m");
     });

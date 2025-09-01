@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Heart Professional Viewer</title>
+<title>Professional 3D Heart Viewer</title>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <style>
   body {
@@ -79,7 +79,7 @@
   camera-controls
   interaction-prompt="none"
   shadow-intensity="1"
-  camera-orbit="0deg 75deg 2m"
+  camera-orbit="0deg 75deg 1.8m"
   min-camera-orbit="auto auto 1m"
   max-camera-orbit="auto auto 9999m"
   min-field-of-view="20deg"
@@ -87,6 +87,7 @@
   style="--poster-color: transparent;"
   ar>
 
+  <!-- Hotspots -->
   <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
     data-position="-0.340815m 0.711882m 0.172959m"
     data-normal="0m 1m 0m">
@@ -111,17 +112,17 @@
 const viewer = document.querySelector("#heartViewer");
 const hotspots = document.querySelectorAll(".hotspot");
 
-// Smooth & professional zoom
-let targetRadius = 2;
-let currentRadius = 2;
+// --- Camera & zoom ---
+let targetRadius = 1.8; // start with professional distance
+let currentRadius = targetRadius;
 const minRadius = 1;
 const maxRadius = 9999;
-const zoomEasing = 0.08; // smoother, slightly faster glide
-const scrollFactor = 0.002; // very gentle scroll zoom
+const zoomEasing = 0.08;
+const scrollFactor = 0.002;
 
-// Smooth rotation with inertia
+// --- Rotation with inertia ---
 let targetTheta = 0;
-let targetPhi = Math.PI / 2.4; // 75deg
+let targetPhi = 75 * Math.PI / 180; // initial phi
 let currentTheta = targetTheta;
 let currentPhi = targetPhi;
 const rotationEasing = 0.08;
@@ -129,19 +130,19 @@ let isDragging = false;
 let lastX = 0;
 let lastY = 0;
 
-// --- Wheel zoom ---
-viewer.addEventListener("wheel", (event) => {
-  event.preventDefault();
-  targetRadius += event.deltaY * scrollFactor;
+// --- Zooming ---
+viewer.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  targetRadius += e.deltaY * scrollFactor;
   if (targetRadius < minRadius) targetRadius = minRadius;
   if (targetRadius > maxRadius) targetRadius = maxRadius;
 }, { passive: false });
 
 // --- Drag rotation ---
-viewer.addEventListener("pointerdown", (event) => {
+viewer.addEventListener("pointerdown", (e) => {
   isDragging = true;
-  lastX = event.clientX;
-  lastY = event.clientY;
+  lastX = e.clientX;
+  lastY = e.clientY;
   viewer.style.cursor = "grabbing";
 });
 
@@ -150,16 +151,15 @@ viewer.addEventListener("pointerup", () => {
   viewer.style.cursor = "grab";
 });
 
-viewer.addEventListener("pointermove", (event) => {
+viewer.addEventListener("pointermove", (e) => {
   if (!isDragging) return;
-  const dx = (event.clientX - lastX) * 0.004; // slightly slower rotation
-  const dy = (event.clientY - lastY) * 0.004;
+  const dx = (e.clientX - lastX) * 0.004;
+  const dy = (e.clientY - lastY) * 0.004;
   targetTheta -= dx;
   targetPhi -= dy;
-  if(targetPhi < 0.1) targetPhi = 0.1;
-  if(targetPhi > Math.PI - 0.1) targetPhi = Math.PI - 0.1;
-  lastX = event.clientX;
-  lastY = event.clientY;
+  targetPhi = Math.min(Math.PI - 0.1, Math.max(0.1, targetPhi));
+  lastX = e.clientX;
+  lastY = e.clientY;
 });
 
 // --- Animate loop ---
@@ -179,7 +179,7 @@ function focusOnPart(hotspotId, orbit, target, zoom) {
   hotspot.classList.add("active");
 
   const match = orbit.match(/(-?\d+)deg (-?\d+)deg ([\d.]+)m/);
-  if(match){
+  if (match){
     const degToRad = Math.PI / 180;
     targetTheta = parseFloat(match[1]) * degToRad;
     targetPhi = parseFloat(match[2]) * degToRad;
@@ -188,14 +188,13 @@ function focusOnPart(hotspotId, orbit, target, zoom) {
   viewer.setAttribute('camera-target', target);
 }
 
+// --- Hotspot click events ---
 document.querySelector("#hotspot-svc").addEventListener("click", () => {
   focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m", 1.2);
 });
-
 document.querySelector("#hotspot-pa").addEventListener("click", () => {
   focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m", 2.0);
 });
-
 document.querySelector("#hotspot-aorta").addEventListener("click", () => {
   focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m", 1.5);
 });

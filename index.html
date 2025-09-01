@@ -19,6 +19,10 @@
       width: 100vw;
       height: 100vh;
       background-color: #fff;
+
+      /* smoother & slower zoom */
+      --model-viewer-scroll-sensitivity: 0.2; /* smaller = slower zoom */
+      --model-viewer-interaction-prompt-threshold: 500ms;
     }
 
     .hotspot {
@@ -79,9 +83,9 @@
     interaction-prompt="none"
     shadow-intensity="1"
     camera-orbit="0deg 75deg 4m"
-    min-camera-orbit="auto auto 0.1m"
-    max-camera-orbit="auto auto 1000m"
-    min-field-of-view="10deg"
+    min-camera-orbit="auto auto 0.8m"   <!-- restrict zoom-in -->
+    max-camera-orbit="auto auto 1000m"  <!-- unlimited zoom-out -->
+    min-field-of-view="20deg"
     max-field-of-view="180deg"
     style="--poster-color: transparent;"
     ar>
@@ -118,7 +122,7 @@
     }
 
     document.querySelector("#hotspot-svc").addEventListener("click", () => {
-      focusOnPart("hotspot-svc", "-40deg 65deg 0.6m", "-0.340815m 0.711882m 0.172959m");
+      focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m");
     });
 
     document.querySelector("#hotspot-pa").addEventListener("click", () => {
@@ -126,7 +130,7 @@
     });
 
     document.querySelector("#hotspot-aorta").addEventListener("click", () => {
-      focusOnPart("hotspot-aorta", "-10deg 40deg 0.80m", "0.01m 0.60m 0.03m");
+      focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m");
     });
   </script>
 

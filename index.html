@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>3D Heart Model - Mobile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>3D Heart Model Clean Labels</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     /* ===== BASE STYLES ===== */
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
     }
     
     body {
@@ -18,8 +17,7 @@
       background: #fff;
       height: 100vh;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      touch-action: none;
+      font-family: "DM Sans", sans-serif;
     }
     
     /* ===== MODEL VIEWER STYLES ===== */
@@ -29,11 +27,6 @@
       background-color: #fff;
       cursor: grab;
       --poster-color: transparent;
-      --progress-bar-color: #67130c;
-    }
-    
-    model-viewer:active {
-      cursor: grabbing;
     }
     
     /* ===== HOTSPOT STYLES ===== */
@@ -49,18 +42,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
-      touch-action: manipulation;
-    }
-    
-    .hotspot:hover,
-    .hotspot:focus {
-      transform: scale(1.1);
-      box-shadow: 0 4px 16px rgba(103, 19, 12, 0.6);
-    }
-    
-    .hotspot:active {
-      transform: scale(0.95);
     }
     
     /* ===== LABEL STYLES ===== */
@@ -99,77 +80,9 @@
       display: block;
       opacity: 1;
     }
-    
-    /* ===== MOBILE OPTIMIZATIONS ===== */
-    @media (max-width: 768px) {
-      .hotspot {
-        width: 44px;
-        height: 44px;
-        border-width: 3px;
-      }
-      
-      .label {
-        font-size: 14px;
-        padding: 10px 14px;
-        left: 55px;
-        max-width: calc(100vw - 70px);
-      }
-      
-      .label::before {
-        width: 20px;
-        left: -20px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .label {
-        font-size: 13px;
-        padding: 8px 12px;
-        max-width: calc(100vw - 60px);
-      }
-    }
-    
-    /* ===== LOADING INDICATOR ===== */
-    .loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      transition: opacity 0.3s ease;
-    }
-    
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #67130c;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .loading-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-  </div>
-
   <model-viewer 
     id="heartViewer"
     src="realistic_human_heart.glb"
@@ -187,22 +100,19 @@
     <!-- Hotspots -->
     <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
       data-position="-0.340815m 0.711882m 0.172959m"
-      data-normal="0m 1m 0m"
-      aria-label="Superior Vena Cava">
+      data-normal="0m 1m 0m">
       <span class="label">Superior Vena Cava</span>
     </button>
 
     <button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
       data-position="0.419654m 0.412853m 0.077488m"
-      data-normal="0m 1m 0m"
-      aria-label="Pulmonary Arteries">
+      data-normal="0m 1m 0m">
       <span class="label">Pulmonary Arteries</span>
     </button>
 
     <button id="hotspot-aorta" class="hotspot" slot="hotspot-aorta"
       data-position="0.101478m 0.622114m -0.123833m"
-      data-normal="0m 1m 0m"
-      aria-label="Aorta">
+      data-normal="0m 1m 0m">
       <span class="label">Aorta</span>
     </button>
   </model-viewer>
@@ -211,19 +121,6 @@
     // ===== CONSTANTS =====
     const viewer = document.querySelector("#heartViewer");
     const hotspots = document.querySelectorAll(".hotspot");
-    const loadingOverlay = document.getElementById("loadingOverlay");
-    
-    // ===== MOBILE DETECTION =====
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // ===== LOADING HANDLER =====
-    viewer.addEventListener('load', () => {
-      loadingOverlay.classList.add('hidden');
-    });
-    
-    viewer.addEventListener('error', () => {
-      loadingOverlay.innerHTML = '<div style="color: #67130c; text-align: center;">Failed to load 3D model<br><small>Please check your internet connection</small></div>';
-    });
     
     // ===== FUNCTIONS =====
     function focusOnPart(hotspotId, orbit, target) {
@@ -234,65 +131,22 @@
       const hotspot = document.getElementById(hotspotId);
       hotspot.classList.add("active");
       
-      // Update camera view with smooth transition
+      // Update camera view
       viewer.setAttribute('camera-orbit', orbit);
       viewer.setAttribute('camera-target', target);
     }
     
     // ===== EVENT LISTENERS =====
-    document.querySelector("#hotspot-svc").addEventListener("click", (e) => {
-      e.preventDefault();
+    document.querySelector("#hotspot-svc").addEventListener("click", () => {
       focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m");
     });
     
-    document.querySelector("#hotspot-pa").addEventListener("click", (e) => {
-      e.preventDefault();
+    document.querySelector("#hotspot-pa").addEventListener("click", () => {
       focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m");
     });
     
-    document.querySelector("#hotspot-aorta").addEventListener("click", (e) => {
-      e.preventDefault();
+    document.querySelector("#hotspot-aorta").addEventListener("click", () => {
       focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m");
-    });
-    
-    // ===== MOBILE TOUCH OPTIMIZATIONS =====
-    if (isMobile) {
-      // Prevent zoom on double tap
-      let lastTouchEnd = 0;
-      document.addEventListener('touchend', function (event) {
-        const now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-          event.preventDefault();
-        }
-        lastTouchEnd = now;
-      }, false);
-      
-      // Optimize for touch
-      hotspots.forEach(hotspot => {
-        hotspot.addEventListener('touchstart', (e) => {
-          e.stopPropagation();
-        });
-      });
-    }
-    
-    // ===== HIDE LABELS WHEN ROTATING MODEL =====
-    let isInteracting = false;
-    
-    viewer.addEventListener('camera-change', () => {
-      if (!isInteracting) {
-        hotspots.forEach(h => h.classList.remove("active"));
-      }
-    });
-    
-    // Track interaction state
-    viewer.addEventListener('mousedown', () => isInteracting = true);
-    viewer.addEventListener('mouseup', () => {
-      setTimeout(() => isInteracting = false, 100);
-    });
-    
-    viewer.addEventListener('touchstart', () => isInteracting = true);
-    viewer.addEventListener('touchend', () => {
-      setTimeout(() => isInteracting = false, 100);
     });
   </script>
 </body>

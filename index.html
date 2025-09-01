@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Heart Model Smooth Zoom</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Heart Smooth Zoom</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     body {
@@ -19,6 +19,7 @@
       width: 100vw;
       height: 100vh;
       background-color: #fff;
+      cursor: grab;
     }
 
     .hotspot {
@@ -85,7 +86,7 @@
     max-field-of-view="180deg"
     style="--poster-color: transparent;"
     ar>
-    
+
     <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
       data-position="-0.340815m 0.711882m 0.172959m"
       data-normal="0m 1m 0m">
@@ -103,22 +104,38 @@
       data-normal="0m 1m 0m">
       <span class="label">Aorta</span>
     </button>
+
   </model-viewer>
 
   <script>
     const viewer = document.querySelector("#heartViewer");
     const hotspots = document.querySelectorAll(".hotspot");
 
-    // --- Smooth Zoom Handler ---
+    // Smooth zoom variables
+    let targetRadius = 2;       // desired distance
+    let currentRadius = 2;      // current camera radius
+    const minRadius = 1;        // zoom-in limit
+    const maxRadius = 9999;     // zoom-out limit
+    const zoomSpeed = 0.02;     // smaller = slower, smoother
+
+    // Handle wheel scroll to change target radius
     viewer.addEventListener("wheel", (event) => {
       event.preventDefault();
-      const orbit = viewer.getCameraOrbit();
-      const change = event.deltaY * -0.0005; // smaller factor = smoother zoom
-      orbit.radius = Math.max(1, orbit.radius + change); // don't zoom inside model
-      viewer.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
+      targetRadius += event.deltaY * 0.01;       // scroll scaling
+      if (targetRadius < minRadius) targetRadius = minRadius;
+      if (targetRadius > maxRadius) targetRadius = maxRadius;
     }, { passive: false });
 
-    // --- Hotspot focus handler ---
+    // Animation loop for smooth easing
+    function animateZoom() {
+      currentRadius += (targetRadius - currentRadius) * zoomSpeed;
+      const orbit = viewer.getCameraOrbit();
+      viewer.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${currentRadius}m`;
+      requestAnimationFrame(animateZoom);
+    }
+    animateZoom(); // start animation
+
+    // Hotspot focus function
     function focusOnPart(hotspotId, orbit, target) {
       hotspots.forEach(h => h.classList.remove("active"));
       const hotspot = document.getElementById(hotspotId);
@@ -129,15 +146,19 @@
 
     document.querySelector("#hotspot-svc").addEventListener("click", () => {
       focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m");
+      targetRadius = 1.2;
     });
 
     document.querySelector("#hotspot-pa").addEventListener("click", () => {
       focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m");
+      targetRadius = 2.0;
     });
 
     document.querySelector("#hotspot-aorta").addEventListener("click", () => {
       focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m");
+      targetRadius = 1.5;
     });
+
   </script>
 
 </body>

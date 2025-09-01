@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3D Heart Model Clean Labels</title>
-
-  <!-- Model Viewer Script -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
   <style>
-    /* ---------- Body & Viewer ---------- */
+    /* ===== BASE STYLES ===== */
+    * {
+      box-sizing: border-box;
+    }
+    
     body {
       margin: 0;
       padding: 0;
@@ -18,15 +19,17 @@
       overflow: hidden;
       font-family: "DM Sans", sans-serif;
     }
-
+    
+    /* ===== MODEL VIEWER STYLES ===== */
     model-viewer {
       width: 100vw;
       height: 100vh;
       background-color: #fff;
       cursor: grab;
+      --poster-color: transparent;
     }
-
-    /* ---------- Hotspots ---------- */
+    
+    /* ===== HOTSPOT STYLES ===== */
     .hotspot {
       background: #67130c;
       border-radius: 50%;
@@ -35,13 +38,13 @@
       border: 2px solid #fff;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 0 6px rgba(103,19,12,0.4);
+      box-shadow: 0 0 6px rgba(103, 19, 12, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
-    /* ---------- Labels ---------- */
+    
+    /* ===== LABEL STYLES ===== */
     .label {
       display: none;
       position: absolute;
@@ -58,9 +61,9 @@
       white-space: nowrap;
       opacity: 0;
       transition: opacity 0.3s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
-
+    
     .label::before {
       content: "";
       position: absolute;
@@ -71,33 +74,28 @@
       height: 1.5px;
       background: #67130c;
     }
-
-    /* Show label when hotspot is active */
+    
+    /* ===== ACTIVE STATE ===== */
     .hotspot.active .label {
       display: block;
       opacity: 1;
     }
   </style>
 </head>
-
 <body>
-
-  <!-- ================== 3D Model Viewer ================== -->
-  <model-viewer
+  <model-viewer 
     id="heartViewer"
     src="realistic_human_heart.glb"
     camera-controls
     interaction-prompt="none"
     shadow-intensity="1"
-    camera-orbit="0deg 75deg 3.5m"       <!-- Initial size -->
-    min-camera-orbit="auto 15deg 1m"     <!-- Max zoom-in -->
-    max-camera-orbit="auto 90deg 5m"     <!-- Max zoom-out -->
+    camera-orbit="0deg 75deg 3.5m"
+    min-camera-orbit="auto 15deg 1m"
+    max-camera-orbit="auto 90deg 5m"
     field-of-view="45deg"
-    style="--poster-color: transparent;"
     ar
   >
-
-    <!-- ================== Hotspots ================== -->
+    <!-- Hotspots -->
     <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
       data-position="-0.340815m 0.711882m 0.172959m"
       data-normal="0m 1m 0m">
@@ -115,53 +113,39 @@
       data-normal="0m 1m 0m">
       <span class="label">Aorta</span>
     </button>
-
   </model-viewer>
 
   <script>
-    // ----------------- Select elements -----------------
+    // ===== CONSTANTS =====
     const viewer = document.querySelector("#heartViewer");
     const hotspots = document.querySelectorAll(".hotspot");
-
-    // ----------------- Hotspot focus function -----------------
+    
+    // ===== FUNCTIONS =====
     function focusOnPart(hotspotId, orbit, target) {
       // Remove active class from all hotspots
       hotspots.forEach(h => h.classList.remove("active"));
-
-      // Activate clicked hotspot
+      
+      // Add active class to clicked hotspot
       const hotspot = document.getElementById(hotspotId);
       hotspot.classList.add("active");
-
-      // Move camera to target
+      
+      // Update camera view
       viewer.setAttribute('camera-orbit', orbit);
       viewer.setAttribute('camera-target', target);
     }
-
-    // ----------------- Hotspot click events -----------------
+    
+    // ===== EVENT LISTENERS =====
     document.querySelector("#hotspot-svc").addEventListener("click", () => {
-      focusOnPart(
-        "hotspot-svc",
-        "-40deg 65deg 1.2m",
-        "-0.340815m 0.711882m 0.172959m"
-      );
+      focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m");
     });
-
+    
     document.querySelector("#hotspot-pa").addEventListener("click", () => {
-      focusOnPart(
-        "hotspot-pa",
-        "100deg 85deg 2.0m",
-        "0.05m 0.1m 0.03m"
-      );
+      focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m");
     });
-
+    
     document.querySelector("#hotspot-aorta").addEventListener("click", () => {
-      focusOnPart(
-        "hotspot-aorta",
-        "-10deg 40deg 1.5m",
-        "0.01m 0.60m 0.03m"
-      );
+      focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m");
     });
   </script>
-
 </body>
 </html>

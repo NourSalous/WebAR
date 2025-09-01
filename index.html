@@ -21,8 +21,7 @@
       background-color: #fff;
 
       /* smoother & slower zoom */
-      --model-viewer-scroll-sensitivity: 0.2; /* smaller = slower zoom */
-      --model-viewer-interaction-prompt-threshold: 500ms;
+      --model-viewer-scroll-sensitivity: 0.2;
     }
 
     .hotspot {
@@ -83,8 +82,8 @@
     interaction-prompt="none"
     shadow-intensity="1"
     camera-orbit="0deg 75deg 4m"
-    min-camera-orbit="auto auto 0.8m"    <!-- restrict zoom-in -->
-    max-camera-orbit="auto auto 10000m"  <!-- effectively unlimited zoom-out -->
+    min-camera-orbit="auto auto 1m"
+    max-camera-orbit="auto auto 9999m"
     min-field-of-view="20deg"
     max-field-of-view="180deg"
     style="--poster-color: transparent;"

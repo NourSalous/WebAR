@@ -41,7 +41,6 @@
     justify-content: center;
   }
 
-  /* ===== LABEL STYLES ===== */
   .label {
     display: none;
     position: absolute;
@@ -60,6 +59,7 @@
     transition: opacity 0.3s ease;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
+
   .label::before {
     content: "";
     position: absolute;
@@ -70,12 +70,13 @@
     height: 1.5px;
     background: #67130c;
   }
+
   .hotspot.active .label {
     display: block;
     opacity: 1;
   }
 
-  /* ===== AR BUTTON ===== */
+  /* ===== STYLE THE AR BUTTON GENERATED AUTOMATICALLY ===== */
   model-viewer::part(ar-button) {
     bottom: 20px;
     right: 20px;
@@ -102,15 +103,12 @@
   max-camera-orbit="auto 90deg 5m"
   field-of-view="45deg"
   ar
-  ar-modes="scene-viewer webxr"
+  ar-modes="scene-viewer webxr quick-look"
   xr-environment
   auto-rotate
   auto-rotate-delay="1000"
   auto-rotate-speed="0.3"
 >
-  <!-- AR Button -->
-  <button slot="ar-button">View in AR</button>
-
   <!-- Hotspots -->
   <button id="hotspot-svc" class="hotspot" slot="hotspot-svc" data-position="-0.340815m 0.711882m 0.172959m" data-normal="0m 1m 0m">
     <span class="label">Superior Vena Cava</span>
@@ -127,15 +125,15 @@
 const viewer = document.querySelector("#heartViewer");
 const hotspots = document.querySelectorAll(".hotspot");
 
-// Smooth camera focus function
+// Smooth camera focus
 function focusOnPart(hotspotId, orbit, target) {
   hotspots.forEach(h => h.classList.remove("active"));
   const hotspot = document.getElementById(hotspotId);
   hotspot.classList.add("active");
 
-  // Animate rotation smoothly
+  // Smoothly animate rotation
   viewer.cameraOrbit = viewer.cameraOrbit; // current orbit
-  viewer.animateCameraOrbit(orbit, { duration: 1000 }); 
+  viewer.animateCameraOrbit(orbit, { duration: 1000 });
   viewer.setAttribute('camera-target', target);
 }
 

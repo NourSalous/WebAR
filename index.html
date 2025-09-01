@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>3D Heart Model Clean Labels</title>
 
-<!-- Google Model Viewer -->
+<!-- Model Viewer Script -->
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
 <style>
-  /* General Page Styles */
+  /* ---------- Body & Viewer ---------- */
   body {
     margin: 0;
     padding: 0;
@@ -19,15 +19,14 @@
     font-family: "DM Sans", sans-serif;
   }
 
-  /* 3D Viewer Fullscreen */
   model-viewer {
     width: 100vw;
     height: 100vh;
     background-color: #fff;
-    cursor: grab; /* indicates draggable 3D */
+    cursor: grab;
   }
 
-  /* Hotspot Styles */
+  /* ---------- Hotspots ---------- */
   .hotspot {
     background: #67130c;
     border-radius: 50%;
@@ -42,7 +41,7 @@
     justify-content: center;
   }
 
-  /* Label Styles */
+  /* ---------- Labels ---------- */
   .label {
     display: none;
     position: absolute;
@@ -62,7 +61,6 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   }
 
-  /* Connector Line from Hotspot to Label */
   .label::before {
     content: "";
     position: absolute;
@@ -83,21 +81,22 @@
 </head>
 <body>
 
-<!-- 3D Heart Viewer -->
+<!-- ================== 3D Model Viewer ================== -->
 <model-viewer
   id="heartViewer"
   src="realistic_human_heart.glb"
   camera-controls
   interaction-prompt="none"
   shadow-intensity="1"
-  camera-orbit="0deg 75deg 2.4m"      <!-- Smaller initial size -->
-  min-camera-orbit="auto 15deg 1m"    <!-- Limit zoom-in -->
-  max-camera-orbit="auto 90deg 5m"    <!-- Allow free zoom-out -->
+  camera-orbit="0deg 75deg 3m"       <!-- Initial size: smaller on load -->
+  min-camera-orbit="auto 15deg 1m"   <!-- Max zoom-in -->
+  max-camera-orbit="auto 90deg 5m"   <!-- Max zoom-out -->
   field-of-view="45deg"
   style="--poster-color: transparent;"
-  ar>
+  ar
+>
 
-  <!-- Hotspots -->
+  <!-- ================== Hotspots ================== -->
   <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
     data-position="-0.340815m 0.711882m 0.172959m"
     data-normal="0m 1m 0m">
@@ -119,34 +118,29 @@
 </model-viewer>
 
 <script>
-  // Get references
+  // ----------------- Select elements -----------------
   const viewer = document.querySelector("#heartViewer");
   const hotspots = document.querySelectorAll(".hotspot");
 
-  /**
-   * Focus camera on a specific hotspot
-   * @param {string} hotspotId - The ID of the clicked hotspot
-   * @param {string} orbit - The desired camera orbit (theta phi radius)
-   * @param {string} target - The 3D point to center camera on
-   */
+  // ----------------- Hotspot focus function -----------------
   function focusOnPart(hotspotId, orbit, target) {
-    // Remove active state from all hotspots
+    // Remove active class from all hotspots
     hotspots.forEach(h => h.classList.remove("active"));
 
     // Activate clicked hotspot
     const hotspot = document.getElementById(hotspotId);
     hotspot.classList.add("active");
 
-    // Move camera smoothly to target
+    // Move camera to target
     viewer.setAttribute('camera-orbit', orbit);
     viewer.setAttribute('camera-target', target);
   }
 
-  // Hotspot click events
+  // ----------------- Hotspot click events -----------------
   document.querySelector("#hotspot-svc").addEventListener("click", () => {
     focusOnPart(
       "hotspot-svc",
-      "-40deg 65deg 1.2m", // Camera orbit distance for zoom-in
+      "-40deg 65deg 1.2m",
       "-0.340815m 0.711882m 0.172959m"
     );
   });

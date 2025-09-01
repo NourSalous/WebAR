@@ -83,8 +83,11 @@
     camera-controls
     interaction-prompt="none"
     shadow-intensity="1"
-    camera-orbit="0deg 75deg 1.5m"
-    field-of-view="45deg"
+    camera-orbit="0deg 75deg 3m"       <!-- farther back so model looks smaller -->
+    min-camera-orbit="auto auto 0.2m"  <!-- zoom in very close -->
+    max-camera-orbit="auto auto 10m"   <!-- zoom out very far -->
+    min-field-of-view="10deg"
+    max-field-of-view="120deg"
     style="--poster-color: transparent;"
     ar>
     
@@ -141,4 +144,3 @@
 
 </body>
 </html>
-

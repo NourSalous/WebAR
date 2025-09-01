@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Heart Smooth Zoom</title>
+  <title>3D Heart Smooth Zoom & Rotation</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     body {
@@ -74,92 +74,134 @@
 </head>
 <body>
 
-  <model-viewer id="heartViewer"
-    src="realistic_human_heart.glb"
-    camera-controls
-    interaction-prompt="none"
-    shadow-intensity="1"
-    camera-orbit="0deg 75deg 2m"
-    min-camera-orbit="auto auto 1m"
-    max-camera-orbit="auto auto 9999m"
-    min-field-of-view="20deg"
-    max-field-of-view="180deg"
-    style="--poster-color: transparent;"
-    ar>
+<model-viewer id="heartViewer"
+  src="realistic_human_heart.glb"
+  camera-controls
+  interaction-prompt="none"
+  shadow-intensity="1"
+  camera-orbit="0deg 75deg 2m"
+  min-camera-orbit="auto auto 1m"
+  max-camera-orbit="auto auto 9999m"
+  min-field-of-view="20deg"
+  max-field-of-view="180deg"
+  style="--poster-color: transparent;"
+  ar>
 
-    <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
-      data-position="-0.340815m 0.711882m 0.172959m"
-      data-normal="0m 1m 0m">
-      <span class="label">Superior Vena Cava</span>
-    </button>
+  <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
+    data-position="-0.340815m 0.711882m 0.172959m"
+    data-normal="0m 1m 0m">
+    <span class="label">Superior Vena Cava</span>
+  </button>
 
-    <button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
-      data-position="0.419654m 0.412853m 0.077488m"
-      data-normal="0m 1m 0m">
-      <span class="label">Pulmonary Arteries</span>
-    </button>
+  <button id="hotspot-pa" class="hotspot" slot="hotspot-pa"
+    data-position="0.419654m 0.412853m 0.077488m"
+    data-normal="0m 1m 0m">
+    <span class="label">Pulmonary Arteries</span>
+  </button>
 
-    <button id="hotspot-aorta" class="hotspot" slot="hotspot-aorta"
-      data-position="0.101478m 0.622114m -0.123833m"
-      data-normal="0m 1m 0m">
-      <span class="label">Aorta</span>
-    </button>
+  <button id="hotspot-aorta" class="hotspot" slot="hotspot-aorta"
+    data-position="0.101478m 0.622114m -0.123833m"
+    data-normal="0m 1m 0m">
+    <span class="label">Aorta</span>
+  </button>
 
-  </model-viewer>
+</model-viewer>
 
-  <script>
-    const viewer = document.querySelector("#heartViewer");
-    const hotspots = document.querySelectorAll(".hotspot");
+<script>
+const viewer = document.querySelector("#heartViewer");
+const hotspots = document.querySelectorAll(".hotspot");
 
-    // Smooth zoom variables
-    let targetRadius = 2;       // desired distance
-    let currentRadius = 2;      // current camera radius
-    const minRadius = 1;        // zoom-in limit
-    const maxRadius = 9999;     // zoom-out limit
-    const zoomSpeed = 0.02;     // smaller = slower, smoother
+// --- Smooth zoom variables ---
+let targetRadius = 2;
+let currentRadius = 2;
+const minRadius = 1;
+const maxRadius = 9999;
+const zoomEasing = 0.05;
+const scrollFactor = 0.003;
 
-    // Handle wheel scroll to change target radius
-    viewer.addEventListener("wheel", (event) => {
-      event.preventDefault();
-      targetRadius += event.deltaY * 0.01;       // scroll scaling
-      if (targetRadius < minRadius) targetRadius = minRadius;
-      if (targetRadius > maxRadius) targetRadius = maxRadius;
-    }, { passive: false });
+// --- Smooth rotation variables ---
+let targetTheta = 0;
+let targetPhi = Math.PI / 2.4; // ~75deg
+let currentTheta = targetTheta;
+let currentPhi = targetPhi;
+const rotationEasing = 0.05;
+let isDragging = false;
+let lastX = 0;
+let lastY = 0;
 
-    // Animation loop for smooth easing
-    function animateZoom() {
-      currentRadius += (targetRadius - currentRadius) * zoomSpeed;
-      const orbit = viewer.getCameraOrbit();
-      viewer.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${currentRadius}m`;
-      requestAnimationFrame(animateZoom);
-    }
-    animateZoom(); // start animation
+// --- Wheel zoom ---
+viewer.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  targetRadius += event.deltaY * scrollFactor;
+  if (targetRadius < minRadius) targetRadius = minRadius;
+  if (targetRadius > maxRadius) targetRadius = maxRadius;
+}, { passive: false });
 
-    // Hotspot focus function
-    function focusOnPart(hotspotId, orbit, target) {
-      hotspots.forEach(h => h.classList.remove("active"));
-      const hotspot = document.getElementById(hotspotId);
-      hotspot.classList.add("active");
-      viewer.setAttribute('camera-orbit', orbit);
-      viewer.setAttribute('camera-target', target);
-    }
+// --- Drag rotation ---
+viewer.addEventListener("pointerdown", (event) => {
+  isDragging = true;
+  lastX = event.clientX;
+  lastY = event.clientY;
+  viewer.style.cursor = "grabbing";
+});
 
-    document.querySelector("#hotspot-svc").addEventListener("click", () => {
-      focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m");
-      targetRadius = 1.2;
-    });
+viewer.addEventListener("pointerup", () => {
+  isDragging = false;
+  viewer.style.cursor = "grab";
+});
 
-    document.querySelector("#hotspot-pa").addEventListener("click", () => {
-      focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m");
-      targetRadius = 2.0;
-    });
+viewer.addEventListener("pointermove", (event) => {
+  if (!isDragging) return;
+  const dx = (event.clientX - lastX) * 0.005; // rotation speed
+  const dy = (event.clientY - lastY) * 0.005;
+  targetTheta -= dx;
+  targetPhi -= dy;
+  if(targetPhi < 0.1) targetPhi = 0.1;
+  if(targetPhi > Math.PI - 0.1) targetPhi = Math.PI - 0.1;
+  lastX = event.clientX;
+  lastY = event.clientY;
+});
 
-    document.querySelector("#hotspot-aorta").addEventListener("click", () => {
-      focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m");
-      targetRadius = 1.5;
-    });
+// --- Animation loop for smooth rotation & zoom ---
+function animate() {
+  currentRadius += (targetRadius - currentRadius) * zoomEasing;
+  currentTheta += (targetTheta - currentTheta) * rotationEasing;
+  currentPhi += (targetPhi - currentPhi) * rotationEasing;
+  viewer.cameraOrbit = `${currentTheta}rad ${currentPhi}rad ${currentRadius}m`;
+  requestAnimationFrame(animate);
+}
+animate();
 
-  </script>
+// --- Hotspot focus ---
+function focusOnPart(hotspotId, orbit, target, zoom) {
+  hotspots.forEach(h => h.classList.remove("active"));
+  const hotspot = document.getElementById(hotspotId);
+  hotspot.classList.add("active");
+
+  // Extract theta, phi, radius from orbit string
+  const match = orbit.match(/(-?\d+)deg (-?\d+)deg ([\d.]+)m/);
+  if(match){
+    const degToRad = Math.PI / 180;
+    targetTheta = parseFloat(match[1]) * degToRad;
+    targetPhi = parseFloat(match[2]) * degToRad;
+    targetRadius = zoom;
+  }
+
+  viewer.setAttribute('camera-target', target);
+}
+
+document.querySelector("#hotspot-svc").addEventListener("click", () => {
+  focusOnPart("hotspot-svc", "-40deg 65deg 1.2m", "-0.340815m 0.711882m 0.172959m", 1.2);
+});
+
+document.querySelector("#hotspot-pa").addEventListener("click", () => {
+  focusOnPart("hotspot-pa", "100deg 85deg 2.0m", "0.05m 0.1m 0.03m", 2.0);
+});
+
+document.querySelector("#hotspot-aorta").addEventListener("click", () => {
+  focusOnPart("hotspot-aorta", "-10deg 40deg 1.5m", "0.01m 0.60m 0.03m", 1.5);
+});
+</script>
 
 </body>
 </html>

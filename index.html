@@ -13,7 +13,6 @@
       padding: 0;
       background: #fff;
       height: 100vh;
-      overflow: hidden;
       font-family: "DM Sans", sans-serif;
     }
 
@@ -24,6 +23,25 @@
       background-color: #fff;
       cursor: grab;
       --poster-color: transparent;
+    }
+
+    /* ===== FORCE SHOW AR BUTTON ===== */
+    model-viewer::part(default-ar-button) {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: #67130c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      z-index: 9999;
+      cursor: pointer;
     }
 
     /* ===== HOTSPOT STYLES ===== */
@@ -80,10 +98,7 @@
   </style>
 </head>
 <body>
-  
-  
-    
-    <model-viewer
+  <model-viewer
       id="heartViewer"
       src="https://noursalous.github.io/WebAR/realistic_human_heart.glb"
       ios-src="https://noursalous.github.io/WebAR/realistic_human_heart.usdz"
@@ -97,12 +112,8 @@
       field-of-view="45deg"
       shadow-intensity="1"
       interaction-prompt="auto"
-      quick-look-browsers="safari chrome"
-      >
-   
-
-  
-
+      quick-look-browsers="safari chrome">
+    
     <!-- Hotspots -->
     <button id="hotspot-svc" class="hotspot" slot="hotspot-svc"
       data-position="-0.340815m 0.711882m 0.172959m"
@@ -149,22 +160,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
